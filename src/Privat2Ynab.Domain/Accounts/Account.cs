@@ -1,23 +1,21 @@
 namespace Privat2Ynab.Domain.Accounts;
 
-public sealed record AccountConfiguration
+public sealed record Account
 {
-    private AccountConfiguration()
+    private Account()
     {
     }
 
-    public Guid Id { get; private set; }
+    public int Id { get; private set; }
 
     public string FileName { get; private set; } = null!;
     public Guid YnabAccountId { get; private set; }
 
-    public static AccountConfiguration Create(
-        Guid id,
+    public static Account Create(
         string fileName,
         Guid ynabAccountId) =>
         new()
         {
-            Id = id,
             FileName = fileName,
             YnabAccountId = ynabAccountId,
         };

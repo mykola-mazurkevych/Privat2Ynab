@@ -6,7 +6,7 @@ public sealed record PayeeRule
     {
     }
 
-    public Guid Id { get; private set; }
+    public int Id { get; private set; }
 
     public string Memo { get; private set; } = null!;
 
@@ -15,13 +15,11 @@ public sealed record PayeeRule
     public string PayeeName { get; private set; } = null!;
 
     public static PayeeRule Create(
-        Guid id,
         string memo,
         RuleType type,
         string payeeName) =>
         new()
         {
-            Id = id,
             Memo = memo,
             Type = type,
             PayeeName = payeeName,
