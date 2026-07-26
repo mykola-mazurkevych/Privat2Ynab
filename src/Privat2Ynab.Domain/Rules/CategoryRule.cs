@@ -1,6 +1,7 @@
 namespace Privat2Ynab.Domain.Rules;
 
-public sealed record CategoryRule
+public sealed record CategoryRule :
+    IEntity
 {
     private CategoryRule()
     {

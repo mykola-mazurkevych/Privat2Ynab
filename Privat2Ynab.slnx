@@ -1,5 +1,7 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/Privat2Ynab.Application/Privat2Ynab.Application.csproj" />
+    <Project Path="src/Privat2Ynab.Console/Privat2Ynab.Console.csproj" />
     <Project Path="src/Privat2Ynab.Domain/Privat2Ynab.Domain.csproj" />
     <Project Path="src/Privat2Ynab.Infrastructure/Privat2Ynab.Infrastructure.csproj" />
   </Folder>

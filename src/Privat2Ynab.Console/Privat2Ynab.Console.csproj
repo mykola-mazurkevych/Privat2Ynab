@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <NoWarn>
+      CA1515; <!-- Consider making public types internal -->
+    </NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Privat2Ynab.Application\Privat2Ynab.Application.csproj" />
+    <ProjectReference Include="..\Privat2Ynab.Infrastructure\Privat2Ynab.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

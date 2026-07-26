@@ -8,7 +8,8 @@ namespace Privat2Ynab.Infrastructure.Persistence;
 internal sealed class Privat2YnabDbContext(DbContextOptions<Privat2YnabDbContext> options) :
     DbContext(options)
 {
-    internal const string ConnectionString = "Data Source=privat2ynab.db";
+    internal static string ConnectionString =>
+        $"Data Source={Path.Combine(AppContext.BaseDirectory, "privat2ynab.db")}";
 
     public DbSet<Account> Accounts => Set<Account>();
 

@@ -1,6 +1,7 @@
 namespace Privat2Ynab.Domain.Rules;
 
-public sealed record PayeeRule
+public sealed record PayeeRule :
+    IEntity
 {
     private PayeeRule()
     {

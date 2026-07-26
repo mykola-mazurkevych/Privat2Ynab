@@ -1,6 +1,7 @@
 namespace Privat2Ynab.Domain.Accounts;
 
-public sealed record Account
+public sealed record Account :
+    IEntity
 {
     private Account()
     {

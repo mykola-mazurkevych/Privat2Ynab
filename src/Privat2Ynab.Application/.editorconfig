@@ -1,0 +1,2 @@
+[*.cs]
+resharper_not_accessed_positional_property_local_highlighting = none
