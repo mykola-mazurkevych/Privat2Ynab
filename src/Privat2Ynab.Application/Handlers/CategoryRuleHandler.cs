@@ -23,9 +23,12 @@ internal sealed class CategoryRuleHandler(
     {
         var categoryRule = CategoryRule.Create(
             createCategoryRule.Memo,
-            createCategoryRule.Type,
-            createCategoryRule.CategoryGroupName,
-            createCategoryRule.CategoryName);
+            createCategoryRule.MatchType,
+            createCategoryRule.CategoryGroupId,
+            "", // TODO: enrich category group name
+            createCategoryRule.CategoryId,
+            "", // TODO: enrich category name
+            isActive: true);
         categoryRule = await repository.AddAsync(categoryRule, cancellationToken);
         outputWriter.Write("Category rule added:");
         outputWriter.Write(CategoryRuleModel.Create(categoryRule).ToTable());
@@ -40,15 +43,19 @@ internal sealed class CategoryRuleHandler(
     private sealed record CategoryRuleModel(
         int Id,
         string Memo,
-        RuleType Type,
-        [property: DisplayName("Category Group Name")] string CategoryGroupName,
-        [property: DisplayName("Category Name")] string CategoryName)
+        [property: DisplayName("String Match Type")] StringMatchType MatchType,
+        [property: DisplayName("YNAB Category Group Id")] Guid CategoryGroupId,
+        [property: DisplayName("YNAB Category Group Name")] string CategoryGroupName,
+        [property: DisplayName("YNAB Group Id")] Guid CategoryId,
+        [property: DisplayName("YNAB Category Name")] string CategoryName)
     {
         public static CategoryRuleModel Create(CategoryRule categoryRule) =>
             new(categoryRule.Id,
                 categoryRule.Memo,
-                categoryRule.Type,
+                categoryRule.MatchType,
+                categoryRule.CategoryGroupId,
                 categoryRule.CategoryGroupName,
+                categoryRule.CategoryId,
                 categoryRule.CategoryName);
     }
 }

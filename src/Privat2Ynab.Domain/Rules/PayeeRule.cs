@@ -11,18 +11,25 @@ public sealed record PayeeRule :
 
     public string Memo { get; private set; } = null!;
 
-    public RuleType Type { get; private set; }
+    public StringMatchType MatchType { get; private set; }
 
+    public Guid PayeeId { get; private set; }
     public string PayeeName { get; private set; } = null!;
+
+    public bool IsActive { get; private set; }
 
     public static PayeeRule Create(
         string memo,
-        RuleType type,
-        string payeeName) =>
+        StringMatchType type,
+        Guid payeeId,
+        string payeeName,
+        bool isActive) =>
         new()
         {
             Memo = memo,
-            Type = type,
+            MatchType = type,
+            PayeeId = payeeId,
             PayeeName = payeeName,
+            IsActive = isActive,
         };
 }

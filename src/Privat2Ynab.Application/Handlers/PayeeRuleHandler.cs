@@ -23,8 +23,10 @@ internal sealed class PayeeRuleHandler(
     {
         var payeeRule = PayeeRule.Create(
             createPayeeRule.Memo,
-            createPayeeRule.Type,
-            createPayeeRule.PayeeName);
+            createPayeeRule.MatchType,
+            createPayeeRule.PayeeId,
+            "", // TODO: enrich payee name
+            isActive: true);
         payeeRule = await repository.AddAsync(payeeRule, cancellationToken);
         outputWriter.Write("Payee rule added:");
         outputWriter.Write(PayeeRuleModel.Create(payeeRule).ToTable());
@@ -39,13 +41,15 @@ internal sealed class PayeeRuleHandler(
     private sealed record PayeeRuleModel(
         int Id,
         string Memo,
-        RuleType Type,
-        [property: DisplayName("Payee Name")] string PayeeName)
+        [property: DisplayName("String Match Type")] StringMatchType MatchType,
+        [property: DisplayName("YNAB Payee Id")] Guid PayeeId,
+        [property: DisplayName("YNAB Payee Name")] string PayeeName)
     {
         public static PayeeRuleModel Create(PayeeRule payeeRule) =>
             new(payeeRule.Id,
                 payeeRule.Memo,
-                payeeRule.Type,
+                payeeRule.MatchType,
+                payeeRule.PayeeId,
                 payeeRule.PayeeName);
     }
 }

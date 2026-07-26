@@ -1,8 +1,8 @@
 namespace Privat2Ynab.Domain.Rules;
 
-public enum RuleType
+public enum StringMatchType
 {
-    Equals = 0,
+    Exact = 0,
     StartsWith = 1,
     EndsWith = 2,
     Contains = 3,

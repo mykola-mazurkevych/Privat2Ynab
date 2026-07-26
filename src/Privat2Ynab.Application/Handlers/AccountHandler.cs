@@ -22,8 +22,13 @@ internal sealed class AccountHandler(
     public async Task AddAsync(CreateAccountDto createAccount, CancellationToken cancellationToken = default)
     {
         var account = Account.Create(
+            createAccount.PersonalAccessToken,
+            createAccount.BudgetId,
+            "", // TODO: enrich budget name
+            createAccount.AccountId,
+            "", // TODO: enrich account name
             createAccount.FileName,
-            createAccount.YnabAccountId);
+            isActive: true);
         account = await repository.AddAsync(account, cancellationToken);
         outputWriter.Write("Account added:");
         outputWriter.Write(AccountModel.Create(account).ToTable());
@@ -37,12 +42,18 @@ internal sealed class AccountHandler(
 
     private sealed record AccountModel(
         int Id,
-        [property: DisplayName("File Name")] string FileName,
-        [property: DisplayName("YNAB Account Id")] Guid YnabAccountId)
+        [property: DisplayName("YNAB Budget Id")] Guid BudgetId,
+        [property: DisplayName("YNAB Budget Name")] string BudgetName,
+        [property: DisplayName("YNAB Account Id")] Guid AccountId,
+        [property: DisplayName("YNAB Account Name")] string AccountName,
+        [property: DisplayName("File Name")] string FileName)
     {
         public static AccountModel Create(Account account) =>
             new(account.Id,
-                account.FileName,
-                account.YnabAccountId);
+                account.BudgetId,
+                account.BudgetName,
+                account.AccountId,
+                account.AccountName,
+                account.FileName);
     }
 }

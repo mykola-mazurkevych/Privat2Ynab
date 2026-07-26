@@ -15,10 +15,11 @@ internal sealed class CategoryRuleConfiguration :
 
         builder.Property(c => c.Id).IsRequired().ValueGeneratedOnAdd();
         builder.Property(c => c.Memo).IsRequired();
-        builder.Property(c => c.Type).IsRequired().HasConversion<string>();
+        builder.Property(c => c.MatchType).IsRequired().HasConversion<string>();
+        builder.Property(c => c.CategoryGroupId).IsRequired();
         builder.Property(c => c.CategoryGroupName).IsRequired();
+        builder.Property(c => c.CategoryId).IsRequired();
         builder.Property(c => c.CategoryName).IsRequired();
-
-        builder.HasIndex(c => c.Memo).IsUnique();
+        builder.Property(c => c.IsActive).IsRequired();
     }
 }

@@ -41,30 +41,33 @@ internal static class PayeeRuleCommands
     {
         var memoOption = new Option<string>("--memo")
         {
+            Description = "YNAB Transaction Memo",
             Required = true,
         };
-        var ruleTypeOption = new Option<RuleType>("--rule-type")
+        var matchTypeOption = new Option<StringMatchType>("--match-type")
         {
+            Description = "String Match Type",
             Required = true,
         };
-        var payeeNameOption = new Option<string>("--payee-name")
+        var payeeIdOption = new Option<Guid>("--payee-id")
         {
+            Description = "YNAB Payee Id",
             Required = true,
         };
 
         var addPayeeRuleCommand = new Command("add", "Add new Payee rule")
         {
             memoOption,
-            ruleTypeOption,
-            payeeNameOption,
+            matchTypeOption,
+            payeeIdOption,
         };
 
         addPayeeRuleCommand.SetAction((parseResult, cancellationToken) =>
             payeeRuleHandler.AddAsync(
                 new CreatePayeeRuleDto(
                     parseResult.GetRequiredValue(memoOption),
-                    parseResult.GetRequiredValue(ruleTypeOption),
-                    parseResult.GetRequiredValue(payeeNameOption)),
+                    parseResult.GetRequiredValue(matchTypeOption),
+                    parseResult.GetRequiredValue(payeeIdOption)),
                 cancellationToken));
 
         return addPayeeRuleCommand;
@@ -74,6 +77,7 @@ internal static class PayeeRuleCommands
     {
         var idOption = new Option<int>("--id")
         {
+            Description = "Payee Rule Id",
             Required = true,
         };
 

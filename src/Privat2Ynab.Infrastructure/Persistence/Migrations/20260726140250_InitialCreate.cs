@@ -17,8 +17,13 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    PersonalAccessToken = table.Column<string>(type: "TEXT", nullable: false),
+                    BudgetId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    BudgetName = table.Column<string>(type: "TEXT", nullable: false),
+                    AccountId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    AccountName = table.Column<string>(type: "TEXT", nullable: false),
                     FileName = table.Column<string>(type: "TEXT", nullable: false),
-                    YnabAccountId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -32,9 +37,12 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Memo = table.Column<string>(type: "TEXT", nullable: false),
-                    Type = table.Column<string>(type: "TEXT", nullable: false),
+                    MatchType = table.Column<string>(type: "TEXT", nullable: false),
+                    CategoryGroupId = table.Column<Guid>(type: "TEXT", nullable: false),
                     CategoryGroupName = table.Column<string>(type: "TEXT", nullable: false),
-                    CategoryName = table.Column<string>(type: "TEXT", nullable: false)
+                    CategoryId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CategoryName = table.Column<string>(type: "TEXT", nullable: false),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -48,37 +56,15 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Memo = table.Column<string>(type: "TEXT", nullable: false),
-                    Type = table.Column<string>(type: "TEXT", nullable: false),
-                    PayeeName = table.Column<string>(type: "TEXT", nullable: false)
+                    MatchType = table.Column<string>(type: "TEXT", nullable: false),
+                    PayeeId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    PayeeName = table.Column<string>(type: "TEXT", nullable: false),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PayeeRules", x => x.Id);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Accounts_FileName",
-                table: "Accounts",
-                column: "FileName",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Accounts_YnabAccountId",
-                table: "Accounts",
-                column: "YnabAccountId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CategoryRules_Memo",
-                table: "CategoryRules",
-                column: "Memo",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PayeeRules_Memo",
-                table: "PayeeRules",
-                column: "Memo",
-                unique: true);
         }
 
         /// <inheritdoc />

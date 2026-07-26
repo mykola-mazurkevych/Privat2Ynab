@@ -15,9 +15,9 @@ internal sealed class PayeeRuleConfiguration :
 
         builder.Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
         builder.Property(p => p.Memo).IsRequired();
-        builder.Property(p => p.Type).IsRequired().HasConversion<string>();
+        builder.Property(p => p.MatchType).IsRequired().HasConversion<string>();
+        builder.Property(p => p.PayeeId).IsRequired();
         builder.Property(p => p.PayeeName).IsRequired();
-
-        builder.HasIndex(p => p.Memo).IsUnique();
+        builder.Property(p => p.IsActive).IsRequired();
     }
 }

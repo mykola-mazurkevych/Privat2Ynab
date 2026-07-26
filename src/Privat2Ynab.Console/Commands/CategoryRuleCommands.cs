@@ -41,36 +41,40 @@ internal static class CategoryRuleCommands
     {
         var memoOption = new Option<string>("--memo")
         {
+            Description = "YNAB Transaction Memo",
             Required = true,
         };
-        var ruleTypeOption = new Option<RuleType>("--rule-type")
+        var matchTypeOption = new Option<StringMatchType>("--match-type")
         {
+            Description = "String Match Type",
             Required = true,
         };
-        var categoryGroupNameOption = new Option<string>("--category-group-name")
+        var categoryGroupIdOption = new Option<Guid>("--category-group-id")
         {
+            Description = "YNAB Category Group Id",
             Required = true,
         };
-        var categoryNameOption = new Option<string>("--category-name")
+        var categoryIdOption = new Option<Guid>("--category-id")
         {
+            Description = "YNAB Category Id",
             Required = true,
         };
 
         var addCategoryRuleCommand = new Command("add", "Add new category rule")
         {
             memoOption,
-            ruleTypeOption,
-            categoryGroupNameOption,
-            categoryNameOption,
+            matchTypeOption,
+            categoryGroupIdOption,
+            categoryIdOption,
         };
 
         addCategoryRuleCommand.SetAction((parseResult, cancellationToken) =>
             categoryRuleHandler.AddAsync(
                 new CreateCategoryRuleDto(
                     parseResult.GetRequiredValue(memoOption),
-                    parseResult.GetRequiredValue(ruleTypeOption),
-                    parseResult.GetRequiredValue(categoryGroupNameOption),
-                    parseResult.GetRequiredValue(categoryNameOption)),
+                    parseResult.GetRequiredValue(matchTypeOption),
+                    parseResult.GetRequiredValue(categoryGroupIdOption),
+                    parseResult.GetRequiredValue(categoryIdOption)),
                 cancellationToken));
 
         return addCategoryRuleCommand;
@@ -80,6 +84,7 @@ internal static class CategoryRuleCommands
     {
         var idOption = new Option<int>("--id")
         {
+            Description = "Category Rule Id",
             Required = true,
         };
 

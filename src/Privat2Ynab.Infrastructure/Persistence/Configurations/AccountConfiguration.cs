@@ -14,10 +14,11 @@ internal sealed class AccountConfiguration :
         builder.HasKey(a => a.Id);
 
         builder.Property(a => a.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Property(a => a.BudgetId).IsRequired();
+        builder.Property(a => a.BudgetName).IsRequired();
+        builder.Property(a => a.AccountId).IsRequired();
+        builder.Property(a => a.AccountName).IsRequired();
         builder.Property(a => a.FileName).IsRequired();
-        builder.Property(a => a.YnabAccountId).IsRequired();
-
-        builder.HasIndex(a => a.FileName).IsUnique();
-        builder.HasIndex(a => a.YnabAccountId).IsUnique();
+        builder.Property(a => a.IsActive).IsRequired();
     }
 }

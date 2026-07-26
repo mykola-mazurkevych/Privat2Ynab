@@ -4,6 +4,6 @@ namespace Privat2Ynab.Application.Dtos;
 
 public sealed record CreateCategoryRuleDto(
     string Memo,
-    RuleType Type,
-    string CategoryGroupName,
-    string CategoryName);
+    StringMatchType MatchType,
+    Guid CategoryGroupId,
+    Guid CategoryId);

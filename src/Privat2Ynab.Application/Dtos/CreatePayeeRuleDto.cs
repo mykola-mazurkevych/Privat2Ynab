@@ -4,5 +4,5 @@ namespace Privat2Ynab.Application.Dtos;
 
 public sealed record CreatePayeeRuleDto(
     string Memo,
-    RuleType Type,
-    string PayeeName);
+    StringMatchType MatchType,
+    Guid PayeeId);

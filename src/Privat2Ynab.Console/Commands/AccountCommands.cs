@@ -38,26 +38,42 @@ internal static class AccountCommands
 
     private static Command CreateAddAccountCommand(IAccountHandler accountHandler)
     {
-        var fileNameOption = new Option<string>("--file-name")
+        var personalAccessTokenOption = new Option<string>("--personal-access-token")
         {
+            Description = "YNAB Personal Access Token",
             Required = true,
         };
-        var ynabAccountIdOption = new Option<Guid>("--ynab-account-id")
+        var budgetIdOption = new Option<Guid>("--budget-id")
         {
+            Description = "YNAB Budget Id",
+            Required = true,
+        };
+        var accountIdOption = new Option<Guid>("--account-id")
+        {
+            Description = "YNAB Account Id",
+            Required = true,
+        };
+        var fileNameOption = new Option<string>("--file-name")
+        {
+            Description = "Statements File Name",
             Required = true,
         };
 
         var addAccountCommand = new Command("add", "Add new account")
         {
+            personalAccessTokenOption,
+            budgetIdOption,
+            accountIdOption,
             fileNameOption,
-            ynabAccountIdOption,
         };
 
         addAccountCommand.SetAction((parseResult, cancellationToken) =>
             accountHandler.AddAsync(
                 new CreateAccountDto(
-                    parseResult.GetRequiredValue(fileNameOption),
-                    parseResult.GetRequiredValue(ynabAccountIdOption)),
+                    parseResult.GetRequiredValue(personalAccessTokenOption),
+                    parseResult.GetRequiredValue(budgetIdOption),
+                    parseResult.GetRequiredValue(accountIdOption),
+                    parseResult.GetRequiredValue(fileNameOption)),
                 cancellationToken));
 
         return addAccountCommand;
@@ -67,6 +83,7 @@ internal static class AccountCommands
     {
         var idOption = new Option<int>("--id")
         {
+            Description = "Account Id",
             Required = true,
         };
 

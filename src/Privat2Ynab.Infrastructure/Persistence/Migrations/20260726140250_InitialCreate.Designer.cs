@@ -11,7 +11,7 @@ using Privat2Ynab.Infrastructure.Persistence;
 namespace Privat2Ynab.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(Privat2YnabDbContext))]
-    [Migration("20260725094031_InitialCreate")]
+    [Migration("20260726140250_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -26,20 +26,32 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AccountName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("BudgetId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("BudgetName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("YnabAccountId")
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("PersonalAccessToken")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FileName")
-                        .IsUnique();
-
-                    b.HasIndex("YnabAccountId")
-                        .IsUnique();
 
                     b.ToTable("Accounts", (string)null);
                 });
@@ -50,11 +62,24 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<Guid>("CategoryGroupId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("CategoryGroupName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("MatchType")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -62,14 +87,7 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("Memo")
-                        .IsUnique();
 
                     b.ToTable("CategoryRules", (string)null);
                 });
@@ -80,22 +98,25 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("MatchType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Memo")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("PayeeId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PayeeName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("Memo")
-                        .IsUnique();
 
                     b.ToTable("PayeeRules", (string)null);
                 });
