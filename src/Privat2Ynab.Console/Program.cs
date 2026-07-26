@@ -29,5 +29,7 @@ await serviceProvider.GetRequiredService<IMigrator>().MigrateAsync(cancellationT
 
 return await new RootCommand()
     .AddAccountCommands(serviceProvider)
+    .AddCategoryRuleCommands(serviceProvider)
+    .AddPayeeRuleCommands(serviceProvider)
     .Parse(args)
     .InvokeAsync(cancellationToken: cancellationTokenSource.Token);

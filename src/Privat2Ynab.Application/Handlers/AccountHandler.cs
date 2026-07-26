@@ -41,6 +41,8 @@ internal sealed class AccountHandler(
         [property: DisplayName("YNAB Account Id")] Guid YnabAccountId)
     {
         public static AccountModel Create(Account account) =>
-            new(account.Id, account.FileName, account.YnabAccountId);
+            new(account.Id,
+                account.FileName,
+                account.YnabAccountId);
     }
 }

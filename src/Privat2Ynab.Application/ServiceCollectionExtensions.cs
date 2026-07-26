@@ -13,6 +13,8 @@ public static class ServiceCollectionExtensions
     {
         public IServiceCollection AddApplication() =>
             services
-                .AddTransient<IAccountHandler, AccountHandler>();
+                .AddTransient<IAccountHandler, AccountHandler>()
+                .AddTransient<ICategoryRuleHandler, CategoryRuleHandler>()
+                .AddTransient<IPayeeRuleHandler, PayeeRuleHandler>();
     }
 }
