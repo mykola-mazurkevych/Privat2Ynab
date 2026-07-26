@@ -31,5 +31,6 @@ return await new RootCommand()
     .AddAccountCommands(serviceProvider)
     .AddCategoryRuleCommands(serviceProvider)
     .AddPayeeRuleCommands(serviceProvider)
+    .AddPlanCommands(serviceProvider)
     .Parse(args)
     .InvokeAsync(cancellationToken: cancellationTokenSource.Token);

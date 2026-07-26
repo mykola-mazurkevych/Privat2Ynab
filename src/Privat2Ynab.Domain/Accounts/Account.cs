@@ -1,6 +1,10 @@
+// ReSharper disable UnusedMember.Global
+
+using Privat2Ynab.Domain.Plans;
+
 namespace Privat2Ynab.Domain.Accounts;
 
-public sealed record Account :
+public sealed class Account :
     IEntity
 {
     private Account()
@@ -9,32 +13,24 @@ public sealed record Account :
 
     public int Id { get; private set; }
 
-    public string PersonalAccessToken { get; private set; } = null!;
-    public Guid BudgetId { get; private set; }
-    public string BudgetName { get; private set; } = null!;
-    public Guid AccountId { get; private set; }
-    public string AccountName { get; private set; } = null!;
+    public int PlanId { get; private set; }
+    public Plan Plan { get; private set; } = null!;
 
-    public string FileName { get; private set; } = null!;
+    public Guid YnabId { get; private set; }
+    public string Name { get; private set; } = null!;
 
-    public bool IsActive { get; private set; }
+    public string FileName { get; private set; } = null!; // TODO: think about moving to a separate entity so Account will have a collection of files
 
     public static Account Create(
-        string personalAccessToken,
-        Guid budgetId,
-        string budgetName,
-        Guid accountId,
-        string accountName,
-        string fileName,
-        bool isActive) =>
+        int planId,
+        Guid ynabId,
+        string name,
+        string fileName) =>
         new()
         {
-            PersonalAccessToken = personalAccessToken,
-            BudgetId = budgetId,
-            BudgetName = budgetName,
-            AccountId = accountId,
-            AccountName = accountName,
+            PlanId = planId,
+            YnabId = ynabId,
+            Name = name,
             FileName = fileName,
-            IsActive = isActive,
         };
 }

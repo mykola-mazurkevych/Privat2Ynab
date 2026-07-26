@@ -39,6 +39,11 @@ internal static class CategoryRuleCommands
 
     private static Command CreateAddCategoryRuleCommand(ICategoryRuleHandler categoryRuleHandler)
     {
+        var planIdOption = new Option<int>("--plan-id")
+        {
+            Description = "Plan Id",
+            Required = true,
+        };
         var memoOption = new Option<string>("--memo")
         {
             Description = "YNAB Transaction Memo",
@@ -49,19 +54,20 @@ internal static class CategoryRuleCommands
             Description = "String Match Type",
             Required = true,
         };
-        var categoryGroupIdOption = new Option<Guid>("--category-group-id")
+        var categoryGroupIdOption = new Option<string>("--category-group-name")
         {
-            Description = "YNAB Category Group Id",
+            Description = "YNAB Category Group Name",
             Required = true,
         };
-        var categoryIdOption = new Option<Guid>("--category-id")
+        var categoryIdOption = new Option<string>("--category-name")
         {
-            Description = "YNAB Category Id",
+            Description = "YNAB Category Name",
             Required = true,
         };
 
         var addCategoryRuleCommand = new Command("add", "Add new category rule")
         {
+            planIdOption,
             memoOption,
             matchTypeOption,
             categoryGroupIdOption,
@@ -71,6 +77,7 @@ internal static class CategoryRuleCommands
         addCategoryRuleCommand.SetAction((parseResult, cancellationToken) =>
             categoryRuleHandler.AddAsync(
                 new CreateCategoryRuleDto(
+                    parseResult.GetRequiredValue(planIdOption),
                     parseResult.GetRequiredValue(memoOption),
                     parseResult.GetRequiredValue(matchTypeOption),
                     parseResult.GetRequiredValue(categoryGroupIdOption),

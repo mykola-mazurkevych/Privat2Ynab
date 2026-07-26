@@ -4,13 +4,15 @@ using Privat2Ynab.Application.Extensions;
 using Privat2Ynab.Application.Interfaces.Handlers;
 using Privat2Ynab.Application.Interfaces.Persistence;
 using Privat2Ynab.Application.Interfaces.Services;
+using Privat2Ynab.Domain.Plans;
 using Privat2Ynab.Domain.Rules;
 
 namespace Privat2Ynab.Application.Handlers;
 
 internal sealed class PayeeRuleHandler(
     IOutputWriter outputWriter,
-    IRepository repository) :
+    IRepository repository,
+    IYnabClient ynabClient) :
     IPayeeRuleHandler
 {
     public async Task ListAsync(CancellationToken cancellationToken = default)
@@ -21,12 +23,19 @@ internal sealed class PayeeRuleHandler(
 
     public async Task AddAsync(CreatePayeeRuleDto createPayeeRule, CancellationToken cancellationToken = default)
     {
+        var plan = await repository.GetAsync<Plan>(createPayeeRule.PlanId, cancellationToken)
+                   ?? throw new InvalidOperationException("Plan not found");
+
+        var ynabPayees = await ynabClient.GetPayeesAsync(plan.YnabId, plan.Token, cancellationToken);
+        var ynabPayee = ynabPayees.SingleOrDefault(p => string.Equals(p.Name, createPayeeRule.PayeeName, StringComparison.OrdinalIgnoreCase))
+                        ?? throw new InvalidOperationException("Payee not found");
+
         var payeeRule = PayeeRule.Create(
+            plan.Id,
             createPayeeRule.Memo,
             createPayeeRule.MatchType,
-            createPayeeRule.PayeeId,
-            "", // TODO: enrich payee name
-            isActive: true);
+            ynabPayee.Id,
+            ynabPayee.Name);
         payeeRule = await repository.AddAsync(payeeRule, cancellationToken);
         outputWriter.Write("Payee rule added:");
         outputWriter.Write(PayeeRuleModel.Create(payeeRule).ToTable());
@@ -40,6 +49,8 @@ internal sealed class PayeeRuleHandler(
 
     private sealed record PayeeRuleModel(
         int Id,
+        [property: DisplayName("Plan Id")] int PlanId,
+        [property: DisplayName("Plan Name")] string PlanName,
         string Memo,
         [property: DisplayName("String Match Type")] StringMatchType MatchType,
         [property: DisplayName("YNAB Payee Id")] Guid PayeeId,
@@ -47,9 +58,11 @@ internal sealed class PayeeRuleHandler(
     {
         public static PayeeRuleModel Create(PayeeRule payeeRule) =>
             new(payeeRule.Id,
+                payeeRule.Plan.Id,
+                payeeRule.Plan.Name,
                 payeeRule.Memo,
                 payeeRule.MatchType,
-                payeeRule.PayeeId,
-                payeeRule.PayeeName);
+                payeeRule.YnabId,
+                payeeRule.Name);
     }
 }

@@ -20,7 +20,8 @@ public static class ServiceCollectionExtensions
             services
                 .AddDbContext()
                 .AddTransient<IRepository, Repository>()
-                .AddTransient<IOutputWriter, ConsoleWriter>();
+                .AddTransient<IOutputWriter, ConsoleWriter>()
+                .AddTransient<IYnabClient, YnabClient>();
 
         private IServiceCollection AddDbContext() =>
             services

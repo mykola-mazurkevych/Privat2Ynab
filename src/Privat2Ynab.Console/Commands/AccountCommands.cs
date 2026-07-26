@@ -38,17 +38,12 @@ internal static class AccountCommands
 
     private static Command CreateAddAccountCommand(IAccountHandler accountHandler)
     {
-        var personalAccessTokenOption = new Option<string>("--personal-access-token")
+        var planIdOption = new Option<int>("--plan-id")
         {
-            Description = "YNAB Personal Access Token",
+            Description = "Plan Id",
             Required = true,
         };
-        var budgetIdOption = new Option<Guid>("--budget-id")
-        {
-            Description = "YNAB Budget Id",
-            Required = true,
-        };
-        var accountIdOption = new Option<Guid>("--account-id")
+        var ynabIdOption = new Option<Guid>("--ynab-id")
         {
             Description = "YNAB Account Id",
             Required = true,
@@ -61,18 +56,16 @@ internal static class AccountCommands
 
         var addAccountCommand = new Command("add", "Add new account")
         {
-            personalAccessTokenOption,
-            budgetIdOption,
-            accountIdOption,
+            planIdOption,
+            ynabIdOption,
             fileNameOption,
         };
 
         addAccountCommand.SetAction((parseResult, cancellationToken) =>
             accountHandler.AddAsync(
                 new CreateAccountDto(
-                    parseResult.GetRequiredValue(personalAccessTokenOption),
-                    parseResult.GetRequiredValue(budgetIdOption),
-                    parseResult.GetRequiredValue(accountIdOption),
+                    parseResult.GetRequiredValue(planIdOption),
+                    parseResult.GetRequiredValue(ynabIdOption),
                     parseResult.GetRequiredValue(fileNameOption)),
                 cancellationToken));
 

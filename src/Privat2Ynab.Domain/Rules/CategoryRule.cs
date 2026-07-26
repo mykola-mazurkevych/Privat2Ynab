@@ -1,6 +1,10 @@
+// ReSharper disable UnusedMember.Global
+
+using Privat2Ynab.Domain.Plans;
+
 namespace Privat2Ynab.Domain.Rules;
 
-public sealed record CategoryRule :
+public sealed class CategoryRule :
     IEntity
 {
     private CategoryRule()
@@ -9,33 +13,28 @@ public sealed record CategoryRule :
 
     public int Id { get; private set; }
 
+    public int PlanId { get; private set; }
+    public Plan Plan { get; private set; } = null!;
+
     public string Memo { get; private set; } = null!;
 
     public StringMatchType MatchType { get; private set; }
 
-    public Guid CategoryGroupId { get; private set; }
-    public string CategoryGroupName { get; private set; } = null!;
-    public Guid CategoryId { get; private set; }
-    public string CategoryName { get; private set; } = null!;
-
-    public bool IsActive { get; private set; }
+    public Guid YnabId { get; private set; }
+    public string Name { get; private set; } = null!;
 
     public static CategoryRule Create(
+        int planId,
         string memo,
         StringMatchType matchType,
-        Guid categoryGroupId,
-        string categoryGroupName,
-        Guid categoryId,
-        string categoryName,
-        bool isActive) =>
+        Guid ynabId,
+        string name) =>
         new()
         {
+            PlanId = planId,
             Memo = memo,
             MatchType = matchType,
-            CategoryGroupId = categoryGroupId,
-            CategoryGroupName = categoryGroupName,
-            CategoryId = categoryId,
-            CategoryName = categoryName,
-            IsActive = isActive,
+            YnabId = ynabId,
+            Name = name,
         };
 }

@@ -23,57 +23,53 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<Guid>("AccountId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("AccountName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("BudgetId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("BudgetName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsActive")
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PlanId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("PersonalAccessToken")
-                        .IsRequired()
+                    b.Property<Guid>("YnabId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PlanId");
+
                     b.ToTable("Accounts", (string)null);
+                });
+
+            modelBuilder.Entity("Privat2Ynab.Domain.Plans.Plan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("YnabId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Plans", (string)null);
                 });
 
             modelBuilder.Entity("Privat2Ynab.Domain.Rules.CategoryRule", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<Guid>("CategoryGroupId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("CategoryGroupName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("CategoryName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("MatchType")
@@ -84,7 +80,19 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PlanId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("YnabId")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PlanId");
 
                     b.ToTable("CategoryRules", (string)null);
                 });
@@ -95,9 +103,6 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("MatchType")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -106,16 +111,54 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("PayeeId")
+                    b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("PayeeName")
-                        .IsRequired()
+                    b.Property<int>("PlanId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("YnabId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PlanId");
+
                     b.ToTable("PayeeRules", (string)null);
+                });
+
+            modelBuilder.Entity("Privat2Ynab.Domain.Accounts.Account", b =>
+                {
+                    b.HasOne("Privat2Ynab.Domain.Plans.Plan", "Plan")
+                        .WithMany()
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Plan");
+                });
+
+            modelBuilder.Entity("Privat2Ynab.Domain.Rules.CategoryRule", b =>
+                {
+                    b.HasOne("Privat2Ynab.Domain.Plans.Plan", "Plan")
+                        .WithMany()
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Plan");
+                });
+
+            modelBuilder.Entity("Privat2Ynab.Domain.Rules.PayeeRule", b =>
+                {
+                    b.HasOne("Privat2Ynab.Domain.Plans.Plan", "Plan")
+                        .WithMany()
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Plan");
                 });
 #pragma warning restore 612, 618
         }

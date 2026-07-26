@@ -39,6 +39,11 @@ internal static class PayeeRuleCommands
 
     private static Command CreateAddPayeeRuleCommand(IPayeeRuleHandler payeeRuleHandler)
     {
+        var planIdOption = new Option<int>("--plan-id")
+        {
+            Description = "Plan Id",
+            Required = true,
+        };
         var memoOption = new Option<string>("--memo")
         {
             Description = "YNAB Transaction Memo",
@@ -49,7 +54,7 @@ internal static class PayeeRuleCommands
             Description = "String Match Type",
             Required = true,
         };
-        var payeeIdOption = new Option<Guid>("--payee-id")
+        var payeeNameOption = new Option<string>("--payee-name")
         {
             Description = "YNAB Payee Id",
             Required = true,
@@ -57,17 +62,19 @@ internal static class PayeeRuleCommands
 
         var addPayeeRuleCommand = new Command("add", "Add new Payee rule")
         {
+            planIdOption,
             memoOption,
             matchTypeOption,
-            payeeIdOption,
+            payeeNameOption,
         };
 
         addPayeeRuleCommand.SetAction((parseResult, cancellationToken) =>
             payeeRuleHandler.AddAsync(
                 new CreatePayeeRuleDto(
+                    parseResult.GetRequiredValue(planIdOption),
                     parseResult.GetRequiredValue(memoOption),
                     parseResult.GetRequiredValue(matchTypeOption),
-                    parseResult.GetRequiredValue(payeeIdOption)),
+                    parseResult.GetRequiredValue(payeeNameOption)),
                 cancellationToken));
 
         return addPayeeRuleCommand;

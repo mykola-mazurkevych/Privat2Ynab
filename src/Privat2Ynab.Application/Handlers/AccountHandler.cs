@@ -5,12 +5,14 @@ using Privat2Ynab.Application.Interfaces.Handlers;
 using Privat2Ynab.Application.Interfaces.Persistence;
 using Privat2Ynab.Application.Interfaces.Services;
 using Privat2Ynab.Domain.Accounts;
+using Privat2Ynab.Domain.Plans;
 
 namespace Privat2Ynab.Application.Handlers;
 
 internal sealed class AccountHandler(
     IOutputWriter outputWriter,
-    IRepository repository) :
+    IRepository repository,
+    IYnabClient ynabClient) :
     IAccountHandler
 {
     public async Task ListAsync(CancellationToken cancellationToken = default)
@@ -21,14 +23,17 @@ internal sealed class AccountHandler(
 
     public async Task AddAsync(CreateAccountDto createAccount, CancellationToken cancellationToken = default)
     {
+        var plan = await repository.GetAsync<Plan>(createAccount.PlanId, cancellationToken)
+                   ?? throw new InvalidOperationException("Plan not found");
+
+        var ynabAccount = await ynabClient.GetAccountAsync(plan.YnabId, createAccount.YnabId, plan.Token, cancellationToken)
+                          ?? throw new InvalidOperationException("Account not found");
+
         var account = Account.Create(
-            createAccount.PersonalAccessToken,
-            createAccount.BudgetId,
-            "", // TODO: enrich budget name
-            createAccount.AccountId,
-            "", // TODO: enrich account name
-            createAccount.FileName,
-            isActive: true);
+            plan.Id,
+            ynabAccount.Id,
+            ynabAccount.Name,
+            createAccount.FileName);
         account = await repository.AddAsync(account, cancellationToken);
         outputWriter.Write("Account added:");
         outputWriter.Write(AccountModel.Create(account).ToTable());
@@ -42,18 +47,18 @@ internal sealed class AccountHandler(
 
     private sealed record AccountModel(
         int Id,
-        [property: DisplayName("YNAB Budget Id")] Guid BudgetId,
-        [property: DisplayName("YNAB Budget Name")] string BudgetName,
-        [property: DisplayName("YNAB Account Id")] Guid AccountId,
-        [property: DisplayName("YNAB Account Name")] string AccountName,
+        [property: DisplayName("Plan Id")] int PlanId,
+        [property: DisplayName("Plan Name")] string PlanName,
+        [property: DisplayName("YNAB Account Id")] Guid YnabId,
+        [property: DisplayName("YNAB Account Name")] string Name,
         [property: DisplayName("File Name")] string FileName)
     {
         public static AccountModel Create(Account account) =>
             new(account.Id,
-                account.BudgetId,
-                account.BudgetName,
-                account.AccountId,
-                account.AccountName,
+                account.Plan.Id,
+                account.Plan.Name,
+                account.YnabId,
+                account.Name,
                 account.FileName);
     }
 }

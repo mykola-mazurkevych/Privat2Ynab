@@ -14,10 +14,14 @@ internal sealed class PayeeRuleConfiguration :
         builder.HasKey(p => p.Id);
 
         builder.Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Property(p => p.PlanId).IsRequired();
         builder.Property(p => p.Memo).IsRequired();
         builder.Property(p => p.MatchType).IsRequired().HasConversion<string>();
-        builder.Property(p => p.PayeeId).IsRequired();
-        builder.Property(p => p.PayeeName).IsRequired();
-        builder.Property(p => p.IsActive).IsRequired();
+        builder.Property(p => p.YnabId).IsRequired();
+        builder.Property(p => p.Name).IsRequired();
+
+        builder.HasOne(p => p.Plan).WithMany().HasForeignKey(p => p.PlanId);
+
+        builder.Navigation(p => p.Plan).AutoInclude();
     }
 }

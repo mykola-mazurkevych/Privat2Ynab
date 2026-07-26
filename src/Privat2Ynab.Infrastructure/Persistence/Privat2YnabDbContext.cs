@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 using Privat2Ynab.Domain.Accounts;
+using Privat2Ynab.Domain.Plans;
 using Privat2Ynab.Domain.Rules;
 
 namespace Privat2Ynab.Infrastructure.Persistence;
@@ -11,6 +12,7 @@ internal sealed class Privat2YnabDbContext(DbContextOptions<Privat2YnabDbContext
     internal static string ConnectionString =>
         $"Data Source={Path.Combine(AppContext.BaseDirectory, "privat2ynab.db")}";
 
+    public DbSet<Plan> Plans => Set<Plan>();
     public DbSet<Account> Accounts => Set<Account>();
 
     public DbSet<CategoryRule> CategoryRules => Set<CategoryRule>();

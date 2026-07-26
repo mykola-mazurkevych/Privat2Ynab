@@ -22,7 +22,7 @@ internal sealed class Repository(Privat2YnabDbContext dbContext) :
         var entry = await dbContext.Set<TEntity>().AddAsync(entity, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return entry.Entity;
+        return (await GetAsync<TEntity>(entry.Entity.Id, cancellationToken))!;
     }
 
     public async Task UpdateAsync<TEntity>(int id, Action<TEntity> update, CancellationToken cancellationToken = default)

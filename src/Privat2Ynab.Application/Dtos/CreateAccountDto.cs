@@ -1,7 +1,6 @@
 namespace Privat2Ynab.Application.Dtos;
 
 public sealed record CreateAccountDto(
-    string PersonalAccessToken,
-    Guid BudgetId,
-    Guid AccountId,
+    int PlanId,
+    Guid YnabId,
     string FileName);
