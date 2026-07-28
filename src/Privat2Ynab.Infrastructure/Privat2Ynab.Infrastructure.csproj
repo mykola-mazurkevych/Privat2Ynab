@@ -1,6 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <PackageReference Include="ClosedXML" />
     <PackageReference Include="Flurl" />
     <PackageReference Include="Flurl.Http" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />

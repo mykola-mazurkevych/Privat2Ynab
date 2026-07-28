@@ -1,4 +1,4 @@
-﻿using System.CommandLine;
+using System.CommandLine;
 
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,9 +28,6 @@ Console.CancelKeyPress += (_, e) =>
 await serviceProvider.GetRequiredService<IMigrator>().MigrateAsync(cancellationToken: cancellationTokenSource.Token);
 
 return await new RootCommand()
-    .AddAccountCommands(serviceProvider)
-    .AddCategoryRuleCommands(serviceProvider)
-    .AddPayeeRuleCommands(serviceProvider)
-    .AddPlanCommands(serviceProvider)
+    .Configure(serviceProvider)
     .Parse(args)
     .InvokeAsync(cancellationToken: cancellationTokenSource.Token);

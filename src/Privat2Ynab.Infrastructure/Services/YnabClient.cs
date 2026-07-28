@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Local
+// ReSharper disable NotAccessedPositionalProperty.Local
 
 using System.Net;
 using System.Text.Json.Serialization;
@@ -10,6 +11,7 @@ using Privat2Ynab.Application.Interfaces.Services;
 
 using Flurl.Http;
 using System.Collections.ObjectModel;
+using System.Net.Http.Json;
 
 namespace Privat2Ynab.Infrastructure.Services;
 
@@ -69,10 +71,40 @@ internal sealed class YnabClient :
         };
     }
 
+    public async Task<(int CreatedCount, int DuplicatesCount)> SaveTransactionsAsync(
+        Guid planId,
+        string token,
+        IEnumerable<YnabTransaction> transactions,
+        CancellationToken cancellationToken = default)
+    {
+        using var jsonContent = JsonContent.Create(new SaveTransactionsRequest(transactions));
+        var response = await "https://api.ynab.com/v1/"
+            .AppendPathSegments("budgets", planId, "transactions")
+            .WithOAuthBearerToken(token)
+            .AllowAnyHttpStatus()
+            .SendAsync(HttpMethod.Post, jsonContent, cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+
+        return response.StatusCode switch
+        {
+            (int)HttpStatusCode.Created => (await response.GetJsonAsync<DataResponse<SaveTransactionsResponse>>()).Data.ToCounts(),
+            _ => throw new NotSupportedException($"Http status code {response.StatusCode} is not supported"),
+        };
+    }
+
     private sealed record DataResponse<TData>([property: JsonPropertyName("data")] TData Data);
 
     private sealed record AccountResponse([property: JsonPropertyName("account")] YnabAccount Account);
     private sealed record CategoyGroupsResponse([property: JsonPropertyName("category_groups")] Collection<YnabCategoryGroup> CategoryGroups);
     private sealed record PayeesResponse([property: JsonPropertyName("payees")] Collection<YnabPayee> Payees);
     private sealed record PlanResponse([property: JsonPropertyName("plan")] YnabPlan Plan);
+
+    private sealed record SaveTransactionsRequest([property: JsonPropertyName("transactions")] IEnumerable<YnabTransaction> Transactions);
+    private sealed record SaveTransactionsResponse(
+        [property: JsonPropertyName("transaction_ids")] IEnumerable<Guid> TransactionIds,
+        [property: JsonPropertyName("duplicate_import_ids")] IEnumerable<string> DuplicateImportIds)
+    {
+        public (int CreatedCount, int DuplicatesCount) ToCounts() =>
+            new(TransactionIds.Count(), DuplicateImportIds.Count());
+    }
 }

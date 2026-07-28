@@ -21,6 +21,7 @@ public static class ServiceCollectionExtensions
                 .AddDbContext()
                 .AddTransient<IRepository, Repository>()
                 .AddTransient<IOutput, ConsoleOutput>()
+                .AddTransient<IStatementsReader, StatementsReader>()
                 .AddTransient<IYnabClient, YnabClient>();
 
         private IServiceCollection AddDbContext() =>

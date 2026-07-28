@@ -16,6 +16,7 @@ public static class ServiceCollectionExtensions
                 .AddTransient<IAccountHandler, AccountHandler>()
                 .AddTransient<ICategoryRuleHandler, CategoryRuleHandler>()
                 .AddTransient<IPayeeRuleHandler, PayeeRuleHandler>()
-                .AddTransient<IPlanHandler, PlanHandler>();
+                .AddTransient<IPlanHandler, PlanHandler>()
+                .AddTransient<IStatementsHandler, StatementsHandler>();
     }
 }

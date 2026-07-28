@@ -37,4 +37,14 @@ public sealed class CategoryRule :
             YnabId = ynabId,
             Name = name,
         };
+
+    public bool IsApplicableTo(string? memo) =>
+        !string.IsNullOrEmpty(memo) && MatchType switch
+        {
+            StringMatchType.Exact => string.Equals(memo, Memo, StringComparison.OrdinalIgnoreCase),
+            StringMatchType.StartsWith => memo.StartsWith(Memo, StringComparison.OrdinalIgnoreCase),
+            StringMatchType.EndsWith => memo.EndsWith(Memo, StringComparison.OrdinalIgnoreCase),
+            StringMatchType.Contains => memo.Contains(Memo, StringComparison.OrdinalIgnoreCase),
+            _ => throw new NotSupportedException($"String match type {MatchType} is not supported"),
+        };
 }
