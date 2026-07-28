@@ -18,7 +18,7 @@ internal sealed class PayeeRuleHandler(
     public async Task ListAsync(CancellationToken cancellationToken = default)
     {
         var payeeRules = await repository.ListAsync<PayeeRule>(cancellationToken);
-        output.WriteLine(payeeRules.Select(PayeeRuleModel.Create).ToTable(headless: false));
+        output.WriteLine(payeeRules.Select(PayeeRuleModel.Create).OrderBy(p => p.Name).ToTable(headless: false));
     }
 
     public async Task AddAsync(CreatePayeeRuleDto createPayeeRule, CancellationToken cancellationToken = default)
@@ -55,7 +55,7 @@ internal sealed class PayeeRuleHandler(
         string Memo,
         [property: DisplayName("String Match Type")] StringMatchType MatchType,
         [property: DisplayName("YNAB Payee Id")] Guid PayeeId,
-        [property: DisplayName("YNAB Payee Name")] string PayeeName,
+        [property: DisplayName("YNAB Payee Name")] string Name,
         [property: DisplayName("Created At")] DateTime CreatedAt)
     {
         public static PayeeRuleModel Create(PayeeRule payeeRule) =>

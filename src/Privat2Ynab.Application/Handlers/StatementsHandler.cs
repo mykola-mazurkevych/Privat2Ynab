@@ -1,3 +1,4 @@
+using Privat2Ynab.Application.Attributes;
 using Privat2Ynab.Application.Dtos.Ynab;
 using Privat2Ynab.Application.Extensions;
 using Privat2Ynab.Application.Interfaces.Handlers;
@@ -40,21 +41,21 @@ internal sealed class StatementsHandler(
         var categoryRules = await repository.ListAsync<CategoryRule>(cancellationToken);
         var payeeRules = await repository.ListAsync<PayeeRule>(cancellationToken);
 
+        List<ResultModel> results = [];
+
         foreach (var fileInfo in fileInfos)
         {
+            output.WriteLine($"Processing file {fileInfo.Name}...");
+
             if (!fileNameToYnabAccountMap.TryGetValue(fileInfo.Name, out var account))
             {
-                output.Write($"File {fileInfo.Name} is not mapped to any account");
+                output.WriteLine("Not mapped to any account");
                 continue;
             }
 
-            output.Write($"Processing file {fileInfo.Name}");
-
-            var statements = statementsReader.Read(fileInfo, cancellationToken);
-
-            List<YnabTransaction> transactions =
-            [
-                .. statements.Select(statement =>
+            var transactions = statementsReader
+                .Read(fileInfo, cancellationToken)
+                .Select(statement =>
                     new YnabTransaction(
                         ImportId: $"{statement.DateTime:yyyy-MM-dd}{statement.DateTime:t}{statement.CardAmount}{statement.Balance}",
                         account.YnabId,
@@ -63,12 +64,20 @@ internal sealed class StatementsHandler(
                         categoryRules.FirstOrDefault(categoryRule => categoryRule.IsApplicableTo(statement.Description))?.YnabId,
                         payeeRules.FirstOrDefault(payeeRule => payeeRule.IsApplicableTo(statement.Description))?.YnabId,
                         statement.Description))
-            ];
+                .ToList()
+                .AsReadOnly();
 
-            var counts = await ynabClient.SaveTransactionsAsync(account.Plan.YnabId, account.Plan.Token, transactions, cancellationToken);
-            output.WriteLine(counts.ToTable());
+            (int createdCount, int duplicatesCount) = await ynabClient.SaveTransactionsAsync(account.Plan.YnabId, account.Plan.Token, transactions, cancellationToken);
+
+            results.Add(new ResultModel(fileInfo.Name, transactions.Count, createdCount, duplicatesCount));
         }
 
-        throw new NotImplementedException();
+        output.WriteLine(results.ToTable(headless: false));
     }
+
+    private sealed record ResultModel(
+        [property: DisplayName("File Name")] string FileName,
+        [property: DisplayName("Statements Count")] int StatementsCounts,
+        [property: DisplayName("Created Count")] int CreatedCount,
+        [property: DisplayName("Duplicates Count")] int DuplicatesCount);
 }

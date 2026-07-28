@@ -17,7 +17,7 @@ internal sealed class PlanHandler(
     public async Task ListAsync(CancellationToken cancellationToken = default)
     {
         var plans = await repository.ListAsync<Plan>(cancellationToken);
-        output.WriteLine(plans.Select(PlanModel.Create).ToTable(headless: false));
+        output.WriteLine(plans.Select(PlanModel.Create).OrderBy(p => p.Name).ToTable(headless: false));
     }
 
     public async Task AddAsync(CreatePlanDto createPlan, CancellationToken cancellationToken = default)

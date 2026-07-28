@@ -18,7 +18,7 @@ internal sealed class AccountHandler(
     public async Task ListAsync(CancellationToken cancellationToken = default)
     {
         var accounts = await repository.ListAsync<Account>(cancellationToken);
-        output.WriteLine(accounts.Select(AccountModel.Create).ToTable(headless: false));
+        output.WriteLine(accounts.Select(AccountModel.Create).OrderBy(a => a.Name).ToTable(headless: false));
     }
 
     public async Task AddAsync(CreateAccountDto createAccount, CancellationToken cancellationToken = default)

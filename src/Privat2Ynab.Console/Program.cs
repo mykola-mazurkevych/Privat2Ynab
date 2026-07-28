@@ -7,10 +7,6 @@ using Privat2Ynab.Application;
 using Privat2Ynab.Console.Commands;
 using Privat2Ynab.Infrastructure;
 
-Console.WriteLine("#####################");
-Console.WriteLine("#    Privat2Ynab    #");
-Console.WriteLine("#####################");
-
 await using var serviceProvider = new ServiceCollection()
     .AddInfrastructure()
     .AddApplication()
@@ -27,7 +23,9 @@ Console.CancelKeyPress += (_, e) =>
 
 await serviceProvider.GetRequiredService<IMigrator>().MigrateAsync(cancellationToken: cancellationTokenSource.Token);
 
-return await new RootCommand()
+Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+await new RootCommand()
     .Configure(serviceProvider)
     .Parse(args)
     .InvokeAsync(cancellationToken: cancellationTokenSource.Token);

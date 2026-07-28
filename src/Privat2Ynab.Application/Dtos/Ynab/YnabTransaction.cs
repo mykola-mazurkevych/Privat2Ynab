@@ -10,4 +10,6 @@ public sealed record YnabTransaction(
     [property: JsonPropertyName("amount")] int Amount,
     [property: JsonPropertyName("category_id")] Guid? CategoryId,
     [property: JsonPropertyName("payee_id")] Guid? PayeeId,
-    [property: JsonPropertyName("memo")] string? Memo);
+    [property: JsonPropertyName("memo")] string? Memo,
+    [property: JsonPropertyName("cleared")] string Cleared = "cleared",
+    [property: JsonPropertyName("approved")] bool Approved = false);

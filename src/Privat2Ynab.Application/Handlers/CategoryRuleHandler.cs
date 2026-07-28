@@ -18,7 +18,7 @@ internal sealed class CategoryRuleHandler(
     public async Task ListAsync(CancellationToken cancellationToken = default)
     {
         var categoryRules = await repository.ListAsync<CategoryRule>(cancellationToken);
-        output.WriteLine(categoryRules.Select(CategoryRuleModel.Create).ToTable(headless: false));
+        output.WriteLine(categoryRules.Select(CategoryRuleModel.Create).OrderBy(c => c.Name).ToTable(headless: false));
     }
 
     public async Task AddAsync(CreateCategoryRuleDto createCategoryRule, CancellationToken cancellationToken = default)
