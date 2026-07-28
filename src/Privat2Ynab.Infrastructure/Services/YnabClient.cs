@@ -16,66 +16,55 @@ namespace Privat2Ynab.Infrastructure.Services;
 internal sealed class YnabClient :
     IYnabClient
 {
-    public async Task<YnabPlan?> GetPlanAsync(Guid planId, string token, CancellationToken cancellationToken = default)
+    public Task<YnabPlan?> GetPlanAsync(Guid planId, string token, CancellationToken cancellationToken = default) =>
+        GetAsync<PlanResponse, YnabPlan?>(
+            ["plans", planId],
+            token,
+            dataResponse => dataResponse.Data.Plan,
+            _ => null,
+            cancellationToken);
+
+    public Task<YnabAccount?> GetAccountAsync(Guid planId, Guid accountId, string token, CancellationToken cancellationToken = default) =>
+        GetAsync<AccountResponse, YnabAccount?>(
+            ["plans", planId, "accounts", accountId],
+            token,
+            dataResponse => dataResponse.Data.Account,
+            _ => null,
+            cancellationToken);
+
+    public Task<IReadOnlyCollection<YnabPayee>> GetPayeesAsync(Guid planId, string token, CancellationToken cancellationToken = default) =>
+        GetAsync<PayeesResponse, IReadOnlyCollection<YnabPayee>>(
+            ["plans", planId, "payees"],
+            token,
+            dataResponse => dataResponse.Data.Payees.AsReadOnly(),
+            _ => [],
+            cancellationToken);
+
+    public Task<IReadOnlyCollection<YnabCategoryGroup>> GetCategoryGroupsAsync(Guid planId, string token, CancellationToken cancellationToken = default) =>
+        GetAsync<CategoyGroupsResponse, IReadOnlyCollection<YnabCategoryGroup>>(
+            ["plans", planId, "categories"],
+            token,
+            dataResponse => dataResponse.Data.CategoryGroups.AsReadOnly(),
+            _ => [],
+            cancellationToken);
+
+    private static async Task<TResponse> GetAsync<TDataResponse, TResponse>(
+        object[] pathSegments,
+        string token,
+        Func<DataResponse<TDataResponse>, TResponse> okSelector,
+        Func<IFlurlResponse, TResponse> notFoundSelector,
+        CancellationToken cancellationToken)
     {
-        var response = await "https://api.ynab.com/v1/plans"
-            .AppendPathSegment(planId)
+        var response = await "https://api.ynab.com/v1/"
+            .AppendPathSegments(pathSegments)
             .WithOAuthBearerToken(token)
             .AllowAnyHttpStatus()
             .GetAsync(cancellationToken: cancellationToken);
 
         return response.StatusCode switch
         {
-            (int)HttpStatusCode.OK => (await response.GetJsonAsync<DataResponse<PlanResponse>>()).Data.Plan,
-            (int)HttpStatusCode.NotFound => null,
-            _ => throw new NotSupportedException($"Http status code {response.StatusCode} is not supported"),
-        };
-    }
-
-    public async Task<YnabAccount?> GetAccountAsync(Guid planId, Guid accountId, string token, CancellationToken cancellationToken = default)
-    {
-        var response = await "https://api.ynab.com/v1/plans"
-            .AppendPathSegments(planId, "accounts", accountId)
-            .WithOAuthBearerToken(token)
-            .AllowAnyHttpStatus()
-            .GetAsync(cancellationToken: cancellationToken);
-
-        return response.StatusCode switch
-        {
-            (int)HttpStatusCode.OK => (await response.GetJsonAsync<DataResponse<AccountResponse>>()).Data.Account,
-            (int)HttpStatusCode.NotFound => null,
-            _ => throw new NotSupportedException($"Http status code {response.StatusCode} is not supported"),
-        };
-    }
-
-    public async Task<IReadOnlyList<YnabPayee>> GetPayeesAsync(Guid planId, string token, CancellationToken cancellationToken = default)
-    {
-        var response = await "https://api.ynab.com/v1/plans"
-            .AppendPathSegments(planId, "payees")
-            .WithOAuthBearerToken(token)
-            .AllowAnyHttpStatus()
-            .GetAsync(cancellationToken: cancellationToken);
-
-        return response.StatusCode switch
-        {
-            (int)HttpStatusCode.OK => (await response.GetJsonAsync<DataResponse<PayeesResponse>>()).Data.Payees.AsReadOnly(),
-            (int)HttpStatusCode.NotFound => [],
-            _ => throw new NotSupportedException($"Http status code {response.StatusCode} is not supported"),
-        };
-    }
-
-    public async Task<IReadOnlyCollection<YnabCategoryGroup>> GetCategoryGroupsAsync(Guid planId, string token, CancellationToken cancellationToken = default)
-    {
-        var response = await "https://api.ynab.com/v1/plans"
-            .AppendPathSegments(planId, "categories")
-            .WithOAuthBearerToken(token)
-            .AllowAnyHttpStatus()
-            .GetAsync(cancellationToken: cancellationToken);
-
-        return response.StatusCode switch
-        {
-            (int)HttpStatusCode.OK => (await response.GetJsonAsync<DataResponse<CategoyGroupsResponse>>()).Data.CategoryGroups.AsReadOnly(),
-            (int)HttpStatusCode.NotFound => [],
+            (int)HttpStatusCode.OK => okSelector(await response.GetJsonAsync<DataResponse<TDataResponse>>()),
+            (int)HttpStatusCode.NotFound => notFoundSelector(response),
             _ => throw new NotSupportedException($"Http status code {response.StatusCode} is not supported"),
         };
     }
@@ -86,5 +75,4 @@ internal sealed class YnabClient :
     private sealed record CategoyGroupsResponse([property: JsonPropertyName("category_groups")] Collection<YnabCategoryGroup> CategoryGroups);
     private sealed record PayeesResponse([property: JsonPropertyName("payees")] Collection<YnabPayee> Payees);
     private sealed record PlanResponse([property: JsonPropertyName("plan")] YnabPlan Plan);
-    
 }
