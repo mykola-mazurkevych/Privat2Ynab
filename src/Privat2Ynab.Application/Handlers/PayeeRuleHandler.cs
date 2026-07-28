@@ -10,7 +10,7 @@ using Privat2Ynab.Domain.Rules;
 namespace Privat2Ynab.Application.Handlers;
 
 internal sealed class PayeeRuleHandler(
-    IOutputWriter outputWriter,
+    IOutput output,
     IRepository repository,
     IYnabClient ynabClient) :
     IPayeeRuleHandler
@@ -18,7 +18,7 @@ internal sealed class PayeeRuleHandler(
     public async Task ListAsync(CancellationToken cancellationToken = default)
     {
         var payeeRules = await repository.ListAsync<PayeeRule>(cancellationToken);
-        outputWriter.Write(payeeRules.Select(PayeeRuleModel.Create).ToTable(headless: false));
+        output.WriteLine(payeeRules.Select(PayeeRuleModel.Create).ToTable(headless: false));
     }
 
     public async Task AddAsync(CreatePayeeRuleDto createPayeeRule, CancellationToken cancellationToken = default)
@@ -37,14 +37,14 @@ internal sealed class PayeeRuleHandler(
             ynabPayee.Id,
             ynabPayee.Name);
         payeeRule = await repository.AddAsync(payeeRule, cancellationToken);
-        outputWriter.Write("Payee rule added:");
-        outputWriter.Write(PayeeRuleModel.Create(payeeRule).ToTable());
+        output.WriteLine("Payee rule added:");
+        output.WriteLine(PayeeRuleModel.Create(payeeRule).ToTable());
     }
 
     public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
         await repository.DeleteAsync<PayeeRule>(id, cancellationToken);
-        outputWriter.Write($"Payee rule {id} deleted");
+        output.WriteLine($"Payee rule {id} deleted");
     }
 
     private sealed record PayeeRuleModel(

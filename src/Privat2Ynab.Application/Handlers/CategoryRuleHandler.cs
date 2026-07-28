@@ -10,7 +10,7 @@ using Privat2Ynab.Domain.Rules;
 namespace Privat2Ynab.Application.Handlers;
 
 internal sealed class CategoryRuleHandler(
-    IOutputWriter outputWriter,
+    IOutput output,
     IRepository repository,
     IYnabClient ynabClient) :
     ICategoryRuleHandler
@@ -18,7 +18,7 @@ internal sealed class CategoryRuleHandler(
     public async Task ListAsync(CancellationToken cancellationToken = default)
     {
         var categoryRules = await repository.ListAsync<CategoryRule>(cancellationToken);
-        outputWriter.Write(categoryRules.Select(CategoryRuleModel.Create).ToTable(headless: false));
+        output.WriteLine(categoryRules.Select(CategoryRuleModel.Create).ToTable(headless: false));
     }
 
     public async Task AddAsync(CreateCategoryRuleDto createCategoryRule, CancellationToken cancellationToken = default)
@@ -39,14 +39,14 @@ internal sealed class CategoryRuleHandler(
             ynabCategory.Id,
             $"{ynabCategoryGroup.Name} => {ynabCategory.Name}");
         categoryRule = await repository.AddAsync(categoryRule, cancellationToken);
-        outputWriter.Write("Category rule added:");
-        outputWriter.Write(CategoryRuleModel.Create(categoryRule).ToTable());
+        output.WriteLine("Category rule added:");
+        output.WriteLine(CategoryRuleModel.Create(categoryRule).ToTable());
     }
 
     public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
         await repository.DeleteAsync<CategoryRule>(id, cancellationToken);
-        outputWriter.Write($"Category rule {id} deleted");
+        output.WriteLine($"Category rule {id} deleted");
     }
 
     private sealed record CategoryRuleModel(

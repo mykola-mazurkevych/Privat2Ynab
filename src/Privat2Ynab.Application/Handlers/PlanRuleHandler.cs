@@ -9,7 +9,7 @@ using Privat2Ynab.Domain.Plans;
 namespace Privat2Ynab.Application.Handlers;
 
 internal sealed class PlanHandler(
-    IOutputWriter outputWriter,
+    IOutput output,
     IRepository repository,
     IYnabClient ynabClient) :
     IPlanHandler
@@ -17,7 +17,7 @@ internal sealed class PlanHandler(
     public async Task ListAsync(CancellationToken cancellationToken = default)
     {
         var plans = await repository.ListAsync<Plan>(cancellationToken);
-        outputWriter.Write(plans.Select(PlanModel.Create).ToTable(headless: false));
+        output.WriteLine(plans.Select(PlanModel.Create).ToTable(headless: false));
     }
 
     public async Task AddAsync(CreatePlanDto createPlan, CancellationToken cancellationToken = default)
@@ -30,14 +30,14 @@ internal sealed class PlanHandler(
             ynabPlan.Name,
             createPlan.Token);
         plan = await repository.AddAsync(plan, cancellationToken);
-        outputWriter.Write("Plan added:");
-        outputWriter.Write(PlanModel.Create(plan).ToTable());
+        output.WriteLine("Plan added:");
+        output.WriteLine(PlanModel.Create(plan).ToTable());
     }
 
     public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
         await repository.DeleteAsync<Plan>(id, cancellationToken);
-        outputWriter.Write($"Plan {id} deleted");
+        output.WriteLine($"Plan {id} deleted");
     }
 
     private sealed record PlanModel(
