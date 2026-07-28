@@ -30,6 +30,7 @@ internal sealed class AccountHandler(
                           ?? throw new InvalidOperationException("Account not found");
 
         var account = Account.Create(
+            DateTimeOffset.UtcNow,
             plan.Id,
             ynabAccount.Id,
             ynabAccount.Name,
@@ -51,7 +52,8 @@ internal sealed class AccountHandler(
         [property: DisplayName("Plan Name")] string PlanName,
         [property: DisplayName("YNAB Account Id")] Guid YnabId,
         [property: DisplayName("YNAB Account Name")] string Name,
-        [property: DisplayName("File Name")] string FileName)
+        [property: DisplayName("File Name")] string FileName,
+        [property: DisplayName("Created At")] DateTime CreatedAt)
     {
         public static AccountModel Create(Account account) =>
             new(account.Id,
@@ -59,6 +61,7 @@ internal sealed class AccountHandler(
                 account.Plan.Name,
                 account.YnabId,
                 account.Name,
-                account.FileName);
+                account.FileName,
+                account.CreatedAt.ToLocalTime().DateTime);
     }
 }

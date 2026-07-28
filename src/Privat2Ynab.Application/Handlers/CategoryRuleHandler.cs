@@ -33,6 +33,7 @@ internal sealed class CategoryRuleHandler(
                            ?? throw new InvalidOperationException("Category not found");
 
         var categoryRule = CategoryRule.Create(
+            DateTimeOffset.UtcNow,
             plan.Id,
             createCategoryRule.Memo,
             createCategoryRule.MatchType,
@@ -56,7 +57,8 @@ internal sealed class CategoryRuleHandler(
         string Memo,
         [property: DisplayName("String Match Type")] StringMatchType MatchType,
         [property: DisplayName("YNAB Category Id")] Guid YnabId,
-        [property: DisplayName("YNAB Category Name")] string Name)
+        [property: DisplayName("YNAB Category Name")] string Name,
+        [property: DisplayName("Created At")] DateTime CreatedAt)
     {
         public static CategoryRuleModel Create(CategoryRule categoryRule) =>
             new(categoryRule.Id,
@@ -65,6 +67,7 @@ internal sealed class CategoryRuleHandler(
                 categoryRule.Memo,
                 categoryRule.MatchType,
                 categoryRule.YnabId,
-                categoryRule.Name);
+                categoryRule.Name,
+                categoryRule.CreatedAt.ToLocalTime().DateTime);
     }
 }

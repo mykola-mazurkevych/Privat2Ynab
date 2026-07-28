@@ -1,5 +1,3 @@
-// ReSharper disable UnusedMember.Global
-
 using Privat2Ynab.Domain.Plans;
 
 namespace Privat2Ynab.Domain.Rules;
@@ -11,7 +9,11 @@ public sealed class CategoryRule :
     {
     }
 
+    private CategoryRule(DateTimeOffset createdAt, int planId, string memo, StringMatchType matchType, Guid ynabId, string name) =>
+        (CreatedAt, PlanId, Memo, MatchType, YnabId, Name) = (createdAt, planId, memo, matchType, ynabId, name);
+
     public int Id { get; private set; }
+    public DateTimeOffset CreatedAt { get; private set; }
 
     public int PlanId { get; private set; }
     public Plan Plan { get; private set; } = null!;
@@ -24,19 +26,13 @@ public sealed class CategoryRule :
     public string Name { get; private set; } = null!;
 
     public static CategoryRule Create(
+        DateTimeOffset createdAt,
         int planId,
         string memo,
         StringMatchType matchType,
         Guid ynabId,
         string name) =>
-        new()
-        {
-            PlanId = planId,
-            Memo = memo,
-            MatchType = matchType,
-            YnabId = ynabId,
-            Name = name,
-        };
+        new(createdAt, planId, memo, matchType, ynabId, name);
 
     public bool IsApplicableTo(string? memo) =>
         !string.IsNullOrEmpty(memo) && MatchType switch

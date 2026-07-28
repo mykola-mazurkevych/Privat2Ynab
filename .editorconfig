@@ -387,6 +387,7 @@ dotnet_diagnostic.CA1812.severity = none # Avoid uninstantiated internal classes
 dotnet_diagnostic.CA2007.severity = none # Do not directly await a Task
 
 #### ReSharper ####
+[*.cs]
 resharper_check_namespace_highlighting = error
 resharper_csharp_wrap_after_property_in_collections = true
 resharper_csharp_wrap_object_and_collection_initializer_style = chop_always

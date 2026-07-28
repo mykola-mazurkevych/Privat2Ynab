@@ -17,6 +17,7 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     YnabId = table.Column<Guid>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Token = table.Column<string>(type: "TEXT", nullable: false)
@@ -32,6 +33,7 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     PlanId = table.Column<int>(type: "INTEGER", nullable: false),
                     YnabId = table.Column<Guid>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
@@ -54,6 +56,7 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     PlanId = table.Column<int>(type: "INTEGER", nullable: false),
                     Memo = table.Column<string>(type: "TEXT", nullable: false),
                     MatchType = table.Column<string>(type: "TEXT", nullable: false),
@@ -77,6 +80,7 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     PlanId = table.Column<int>(type: "INTEGER", nullable: false),
                     Memo = table.Column<string>(type: "TEXT", nullable: false),
                     MatchType = table.Column<string>(type: "TEXT", nullable: false),

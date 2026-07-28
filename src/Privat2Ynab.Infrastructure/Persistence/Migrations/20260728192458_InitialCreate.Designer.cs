@@ -11,7 +11,7 @@ using Privat2Ynab.Infrastructure.Persistence;
 namespace Privat2Ynab.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(Privat2YnabDbContext))]
-    [Migration("20260726204154_InitialCreate")]
+    [Migration("20260728192458_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,6 +25,9 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("FileName")
                         .IsRequired()
@@ -53,6 +56,9 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -74,6 +80,9 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("MatchType")
                         .IsRequired()
@@ -105,6 +114,9 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("MatchType")
                         .IsRequired()

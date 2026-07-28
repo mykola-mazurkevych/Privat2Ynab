@@ -26,6 +26,7 @@ internal sealed class PlanHandler(
                        throw new InvalidOperationException("Plan not found");
 
         var plan = Plan.Create(
+            DateTimeOffset.UtcNow,
             ynabPlan.Id,
             ynabPlan.Name,
             createPlan.Token);
@@ -44,12 +45,14 @@ internal sealed class PlanHandler(
         int Id,
         [property: DisplayName("YNAB Plan Id")] Guid YnabId,
         [property: DisplayName("YNAB Plan Name")] string Name,
-        [property: DisplayName("YNAB Personal Access Token")] string Token)
+        [property: DisplayName("YNAB Personal Access Token")] string Token,
+        [property: DisplayName("Created At")] DateTime CreatedAt)
     {
         public static PlanModel Create(Plan plan) =>
             new(plan.Id,
                 plan.YnabId,
                 plan.Name,
-                plan.Token);
+                plan.Token,
+                plan.CreatedAt.ToLocalTime().DateTime);
     }
 }

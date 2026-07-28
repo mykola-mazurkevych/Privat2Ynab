@@ -31,6 +31,7 @@ internal sealed class PayeeRuleHandler(
                         ?? throw new InvalidOperationException("Payee not found");
 
         var payeeRule = PayeeRule.Create(
+            DateTimeOffset.UtcNow,
             plan.Id,
             createPayeeRule.Memo,
             createPayeeRule.MatchType,
@@ -54,7 +55,8 @@ internal sealed class PayeeRuleHandler(
         string Memo,
         [property: DisplayName("String Match Type")] StringMatchType MatchType,
         [property: DisplayName("YNAB Payee Id")] Guid PayeeId,
-        [property: DisplayName("YNAB Payee Name")] string PayeeName)
+        [property: DisplayName("YNAB Payee Name")] string PayeeName,
+        [property: DisplayName("Created At")] DateTime CreatedAt)
     {
         public static PayeeRuleModel Create(PayeeRule payeeRule) =>
             new(payeeRule.Id,
@@ -63,6 +65,7 @@ internal sealed class PayeeRuleHandler(
                 payeeRule.Memo,
                 payeeRule.MatchType,
                 payeeRule.YnabId,
-                payeeRule.Name);
+                payeeRule.Name,
+                payeeRule.CreatedAt.ToLocalTime().DateTime);
     }
 }
