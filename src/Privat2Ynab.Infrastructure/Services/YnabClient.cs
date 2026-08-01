@@ -67,7 +67,7 @@ internal sealed class YnabClient :
         {
             (int)HttpStatusCode.OK => okSelector(await response.GetJsonAsync<DataResponse<TDataResponse>>()),
             (int)HttpStatusCode.NotFound => notFoundSelector(response),
-            _ => throw new NotSupportedException($"Http status code {response.StatusCode} is not supported"),
+            _ => throw await CreateExceptionAsync(response),
         };
     }
 
@@ -88,9 +88,22 @@ internal sealed class YnabClient :
         return response.StatusCode switch
         {
             (int)HttpStatusCode.Created => (await response.GetJsonAsync<DataResponse<SaveTransactionsResponse>>()).Data.ToCounts(),
-            _ => throw new NotSupportedException($"Http status code {response.StatusCode} is not supported"),
+            _ => throw await CreateExceptionAsync(response),
         };
     }
+
+    private static async Task<YnabApiException> CreateExceptionAsync(IFlurlResponse response) =>
+        new(response.StatusCode,
+            await response.GetStringAsync(),
+            response.StatusCode switch
+            {
+                (int)HttpStatusCode.Unauthorized => "YNAB authentication failed",
+                (int)HttpStatusCode.Forbidden => "YNAB authorization failed",
+                (int)HttpStatusCode.BadRequest => "YNAB rejected the request",
+                (int)HttpStatusCode.UnprocessableEntity => "YNAB could not process the request",
+                (int)HttpStatusCode.TooManyRequests => "YNAB rate limit exceeded",
+                _ => "Unexpected YNAB API response",
+            });
 
     private sealed record DataResponse<TData>([property: JsonPropertyName("data")] TData Data);
 
@@ -107,4 +120,5 @@ internal sealed class YnabClient :
         public (int CreatedCount, int DuplicatesCount) ToCounts() =>
             new(TransactionIds.Count(), DuplicateImportIds.Count());
     }
+
 }

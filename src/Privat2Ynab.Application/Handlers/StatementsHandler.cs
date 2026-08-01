@@ -74,7 +74,7 @@ internal sealed class StatementsHandler(
                 if (applicableCategoryRules.Count > 1)
                 {
                     var ids = string.Join(", ", applicableCategoryRules.Select(p => p.Id));
-                    output.Write($"{applicableCategoryRules.Count} category rules are applicable to memo '{statement.Description}' ({ids})");
+                    output.WriteLine($"{applicableCategoryRules.Count} category rules are applicable to memo '{statement.Description}' ({ids})");
                 }
 
                 var applicablePayeeRules = payeeRules.Where(p => p.IsApplicableTo(statement.Description)).ToList();
@@ -82,7 +82,7 @@ internal sealed class StatementsHandler(
                 if (applicablePayeeRules.Count > 1)
                 {
                     var ids = string.Join(", ", applicablePayeeRules.Select(p => p.Id));
-                    output.Write($"{applicablePayeeRules.Count} payee rules are applicable to memo '{statement.Description}' ({ids})");
+                    output.WriteLine($"{applicablePayeeRules.Count} payee rules are applicable to memo '{statement.Description}' ({ids})");
                 }
 
                 var transaction = new YnabTransaction(
