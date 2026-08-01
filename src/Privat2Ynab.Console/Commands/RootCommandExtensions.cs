@@ -13,7 +13,11 @@ internal static class RootCommandExtensions
         public RootCommand Configure(IServiceProvider serviceProvider)
         {
             var statementsHandler = serviceProvider.GetRequiredService<IStatementsHandler>();
-            rootCommand.SetAction((_, cancellationToken) => statementsHandler.HandleAsync(cancellationToken));
+            rootCommand.SetAction(async (_, cancellationToken) =>
+            {
+                await statementsHandler.HandleAsync(cancellationToken);
+                System.Console.ReadLine();
+            });
 
             return rootCommand
                 .AddAccountCommands(serviceProvider)
