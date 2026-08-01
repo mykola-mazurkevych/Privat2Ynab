@@ -10,7 +10,7 @@ namespace Privat2Ynab.Infrastructure.Services;
 internal sealed class StatementsReader :
     IStatementsReader
 {
-    public IReadOnlyList<StatementDto> Read(FileInfo fileInfo, CancellationToken cancellationToken = default)
+    public IReadOnlyList<StatementDto> Read(FileInfo fileInfo)
     {
         using var workbook = new XLWorkbook(fileInfo.FullName);
         var worksheet = workbook.Worksheet(1);

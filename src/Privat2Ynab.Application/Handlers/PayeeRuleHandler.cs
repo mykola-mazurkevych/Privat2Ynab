@@ -17,7 +17,7 @@ internal sealed class PayeeRuleHandler(
 {
     public async Task ListAsync(CancellationToken cancellationToken = default)
     {
-        var payeeRules = await repository.ListAsync<PayeeRule>(cancellationToken);
+        var payeeRules = await repository.GetAllAsync<PayeeRule>(cancellationToken);
         output.WriteLine(payeeRules.Select(PayeeRuleModel.Create).OrderBy(p => p.Name).ToTable(headless: false));
     }
 

@@ -16,7 +16,7 @@ internal sealed class PlanHandler(
 {
     public async Task ListAsync(CancellationToken cancellationToken = default)
     {
-        var plans = await repository.ListAsync<Plan>(cancellationToken);
+        var plans = await repository.GetAllAsync<Plan>(cancellationToken);
         output.WriteLine(plans.Select(PlanModel.Create).OrderBy(p => p.Name).ToTable(headless: false));
     }
 
@@ -45,14 +45,12 @@ internal sealed class PlanHandler(
         int Id,
         [property: DisplayName("YNAB Plan Id")] Guid YnabId,
         [property: DisplayName("YNAB Plan Name")] string Name,
-        [property: DisplayName("YNAB Personal Access Token")] string Token,
         [property: DisplayName("Created At")] DateTime CreatedAt)
     {
         public static PlanModel Create(Plan plan) =>
             new(plan.Id,
                 plan.YnabId,
                 plan.Name,
-                plan.Token,
                 plan.CreatedAt.ToLocalTime().DateTime);
     }
 }

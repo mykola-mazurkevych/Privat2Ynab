@@ -18,6 +18,8 @@ internal sealed class StatementsHandler(
 {
     private const string InputDirectoryName = "input";
 
+    private const int YnabDecimalMultiplier = 1000;
+
     public async Task HandleAsync(CancellationToken cancellationToken = default)
     {
         var inputDirectoryInfo = new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, InputDirectoryName));
@@ -32,14 +34,20 @@ internal sealed class StatementsHandler(
             return;
         }
 
-        var accounts = await repository.ListAsync<Account>(cancellationToken);
+        var accounts = await repository.GetAllAsync<Account>(cancellationToken);
         var fileNameToYnabAccountMap = accounts
             .ToDictionary(
                 a => a.FileName,
                 StringComparer.OrdinalIgnoreCase);
 
-        var categoryRules = await repository.ListAsync<CategoryRule>(cancellationToken);
-        var payeeRules = await repository.ListAsync<PayeeRule>(cancellationToken);
+        var allCategoryRules = await repository.GetAllAsync<CategoryRule>(cancellationToken);
+        var planIdToCategoryRulesMap = allCategoryRules
+            .GroupBy(c => c.PlanId)
+            .ToDictionary(g => g.Key, g => g.ToList());
+        var allPayeeRules = await repository.GetAllAsync<PayeeRule>(cancellationToken);
+        var planIdToPayeeRulesMap = allPayeeRules
+            .GroupBy(p => p.PlanId)
+            .ToDictionary(g => g.Key, g => g.ToList());
 
         List<ResultModel> results = [];
 
@@ -53,19 +61,40 @@ internal sealed class StatementsHandler(
                 continue;
             }
 
-            var transactions = statementsReader
-                .Read(fileInfo, cancellationToken)
-                .Select(statement =>
-                    new YnabTransaction(
-                        ImportId: $"{statement.DateTime:yyyy-MM-dd}{statement.DateTime:t}{statement.CardAmount}{statement.Balance}",
-                        account.YnabId,
-                        DateOnly.FromDateTime(statement.DateTime),
-                        (int)(statement.CardAmount * 1000),
-                        categoryRules.FirstOrDefault(categoryRule => categoryRule.IsApplicableTo(statement.Description))?.YnabId,
-                        payeeRules.FirstOrDefault(payeeRule => payeeRule.IsApplicableTo(statement.Description))?.YnabId,
-                        statement.Description))
-                .ToList()
-                .AsReadOnly();
+            var categoryRules = planIdToCategoryRulesMap.GetValueOrDefault(account.PlanId, []);
+            var payeeRules = planIdToPayeeRulesMap.GetValueOrDefault(account.PlanId, []);
+
+            var statements = statementsReader.Read(fileInfo);
+            var transactions = new List<YnabTransaction>(statements.Count);
+
+            foreach (var statement in statements)
+            {
+                var applicableCategoryRules = categoryRules.Where(c => c.IsApplicableTo(statement.Description)).ToList();
+                var categoryRule = applicableCategoryRules.OrderBy(c => c.CreatedAt).FirstOrDefault();
+                if (applicableCategoryRules.Count > 1)
+                {
+                    var ids = string.Join(", ", applicableCategoryRules.Select(p => p.Id));
+                    output.Write($"{applicableCategoryRules.Count} category rules are applicable to memo '{statement.Description}' ({ids})");
+                }
+
+                var applicablePayeeRules = payeeRules.Where(p => p.IsApplicableTo(statement.Description)).ToList();
+                var payeeRule = applicablePayeeRules.OrderBy(p => p.CreatedAt).FirstOrDefault();
+                if (applicablePayeeRules.Count > 1)
+                {
+                    var ids = string.Join(", ", applicablePayeeRules.Select(p => p.Id));
+                    output.Write($"{applicablePayeeRules.Count} payee rules are applicable to memo '{statement.Description}' ({ids})");
+                }
+
+                var transaction = new YnabTransaction(
+                    ImportId: $"{statement.DateTime:yyyy-MM-dd}{statement.DateTime:t}{statement.CardAmount}{statement.Balance}",
+                    account.YnabId,
+                    DateOnly.FromDateTime(statement.DateTime),
+                    (int)(statement.CardAmount * YnabDecimalMultiplier),
+                    categoryRule?.YnabId,
+                    payeeRule?.YnabId,
+                    statement.Description);
+                transactions.Add(transaction);
+            }
 
             (int createdCount, int duplicatesCount) = await ynabClient.SaveTransactionsAsync(account.Plan.YnabId, account.Plan.Token, transactions, cancellationToken);
 

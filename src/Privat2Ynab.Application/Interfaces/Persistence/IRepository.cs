@@ -4,7 +4,7 @@ namespace Privat2Ynab.Application.Interfaces.Persistence;
 
 public interface IRepository
 {
-    Task<IReadOnlyList<TEntity>> ListAsync<TEntity>(CancellationToken cancellationToken = default)
+    Task<IReadOnlyList<TEntity>> GetAllAsync<TEntity>(CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
     Task<TEntity?> GetAsync<TEntity>(int id, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;

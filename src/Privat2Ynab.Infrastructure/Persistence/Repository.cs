@@ -8,7 +8,7 @@ namespace Privat2Ynab.Infrastructure.Persistence;
 internal sealed class Repository(Privat2YnabDbContext dbContext) :
     IRepository
 {
-    public async Task<IReadOnlyList<TEntity>> ListAsync<TEntity>(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<TEntity>> GetAllAsync<TEntity>(CancellationToken cancellationToken = default)
         where TEntity : class, IEntity =>
         (await dbContext.Set<TEntity>().AsNoTracking().ToListAsync(cancellationToken)).AsReadOnly();
 

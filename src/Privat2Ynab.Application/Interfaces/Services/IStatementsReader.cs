@@ -4,5 +4,5 @@ namespace Privat2Ynab.Application.Interfaces.Services;
 
 public interface IStatementsReader
 {
-    IReadOnlyList<StatementDto> Read(FileInfo fileInfo, CancellationToken cancellationToken = default);
+    IReadOnlyList<StatementDto> Read(FileInfo fileInfo);
 }
