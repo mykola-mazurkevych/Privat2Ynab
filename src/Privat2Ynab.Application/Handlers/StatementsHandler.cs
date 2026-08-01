@@ -73,16 +73,20 @@ internal sealed class StatementsHandler(
                 var categoryRule = applicableCategoryRules.OrderBy(c => c.CreatedAt).FirstOrDefault();
                 if (applicableCategoryRules.Count > 1)
                 {
-                    var ids = string.Join(", ", applicableCategoryRules.Select(p => p.Id));
-                    output.WriteLine($"{applicableCategoryRules.Count} category rules are applicable to memo '{statement.Description}' ({ids})");
+                    output.WriteLine("More than one category rule is applicable:");
+                    output.WriteLine($"  - memo: {statement.Description}");
+                    output.WriteLine($"  - applicable rule ids: {string.Join(", ", applicableCategoryRules.Select(p => p.Id))}");
+                    output.WriteLine($"  - rule id applied: {categoryRule!.Id}");
                 }
 
                 var applicablePayeeRules = payeeRules.Where(p => p.IsApplicableTo(statement.Description)).ToList();
                 var payeeRule = applicablePayeeRules.OrderBy(p => p.CreatedAt).FirstOrDefault();
                 if (applicablePayeeRules.Count > 1)
                 {
-                    var ids = string.Join(", ", applicablePayeeRules.Select(p => p.Id));
-                    output.WriteLine($"{applicablePayeeRules.Count} payee rules are applicable to memo '{statement.Description}' ({ids})");
+                    output.WriteLine("More than one payee rule is applicable:");
+                    output.WriteLine($"  - memo: {statement.Description}");
+                    output.WriteLine($"  - applicable rule ids: {string.Join(", ", applicablePayeeRules.Select(p => p.Id))}");
+                    output.WriteLine($"  - rule id applied: {payeeRule!.Id}");
                 }
 
                 var transaction = new YnabTransaction(
