@@ -22,5 +22,7 @@ internal sealed class AccountConfiguration :
         builder.HasOne(a => a.Plan).WithMany().HasForeignKey(a => a.PlanId);
 
         builder.Navigation(a => a.Plan).AutoInclude();
+
+        builder.HasIndex(a => a.FileName).IsUnique();
     }
 }

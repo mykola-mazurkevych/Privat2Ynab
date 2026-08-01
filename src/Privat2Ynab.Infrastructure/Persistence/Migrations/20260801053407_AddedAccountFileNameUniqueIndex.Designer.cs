@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Privat2Ynab.Infrastructure.Persistence;
 
@@ -10,9 +11,11 @@ using Privat2Ynab.Infrastructure.Persistence;
 namespace Privat2Ynab.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(Privat2YnabDbContext))]
-    partial class Privat2YnabDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260801053407_AddedAccountFileNameUniqueIndex")]
+    partial class AddedAccountFileNameUniqueIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
