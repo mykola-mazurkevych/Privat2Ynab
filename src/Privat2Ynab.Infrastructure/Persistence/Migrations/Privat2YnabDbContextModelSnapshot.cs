@@ -28,7 +28,8 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("FileName")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .UseCollation("NOCASE");
 
                     b.Property<string>("Name")
                         .IsRequired()

@@ -11,7 +11,7 @@ using Privat2Ynab.Infrastructure.Persistence;
 namespace Privat2Ynab.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(Privat2YnabDbContext))]
-    [Migration("20260801053407_AddedAccountFileNameUniqueIndex")]
+    [Migration("20260801060521_AddedAccountFileNameUniqueIndex")]
     partial class AddedAccountFileNameUniqueIndex
     {
         /// <inheritdoc />
@@ -31,7 +31,8 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("FileName")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .UseCollation("NOCASE");
 
                     b.Property<string>("Name")
                         .IsRequired()

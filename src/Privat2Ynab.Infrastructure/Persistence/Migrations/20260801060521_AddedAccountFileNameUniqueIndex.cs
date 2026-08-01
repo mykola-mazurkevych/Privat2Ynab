@@ -10,6 +10,15 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterColumn<string>(
+                name: "FileName",
+                table: "Accounts",
+                type: "TEXT",
+                nullable: false,
+                collation: "NOCASE",
+                oldClrType: typeof(string),
+                oldType: "TEXT");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Accounts_FileName",
                 table: "Accounts",
@@ -23,6 +32,15 @@ namespace Privat2Ynab.Infrastructure.Persistence.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_Accounts_FileName",
                 table: "Accounts");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "FileName",
+                table: "Accounts",
+                type: "TEXT",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "TEXT",
+                oldCollation: "NOCASE");
         }
     }
 }

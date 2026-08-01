@@ -17,7 +17,7 @@ internal sealed class AccountConfiguration :
         builder.Property(a => a.PlanId).IsRequired();
         builder.Property(a => a.YnabId).IsRequired();
         builder.Property(a => a.Name).IsRequired();
-        builder.Property(a => a.FileName).IsRequired();
+        builder.Property(a => a.FileName).IsRequired().UseCollation("NOCASE");
 
         builder.HasOne(a => a.Plan).WithMany().HasForeignKey(a => a.PlanId);
 
