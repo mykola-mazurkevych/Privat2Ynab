@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 using Microsoft.EntityFrameworkCore;
 
 using Privat2Ynab.Application.Interfaces.Persistence;
@@ -8,9 +10,13 @@ namespace Privat2Ynab.Infrastructure.Persistence;
 internal sealed class Repository(Privat2YnabDbContext dbContext) :
     IRepository
 {
-    public async Task<IReadOnlyList<TEntity>> GetAllAsync<TEntity>(CancellationToken cancellationToken = default)
+    public Task<IReadOnlyList<TEntity>> GetAllAsync<TEntity>(CancellationToken cancellationToken = default)
         where TEntity : class, IEntity =>
-        (await dbContext.Set<TEntity>().AsNoTracking().ToListAsync(cancellationToken)).AsReadOnly();
+        GetAllAsync<TEntity>(_ => true, cancellationToken);
+
+    public async Task<IReadOnlyList<TEntity>> GetAllAsync<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity =>
+        (await dbContext.Set<TEntity>().AsNoTracking().Where(predicate).ToListAsync(cancellationToken)).AsReadOnly();
 
     public Task<TEntity?> GetAsync<TEntity>(int id, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity =>
@@ -33,11 +39,35 @@ internal sealed class Repository(Privat2YnabDbContext dbContext) :
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
+    public Task UpdateAsync<TEntity>(IReadOnlyList<TEntity> entities, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity
+    {
+        if (entities.Count == 0)
+        {
+            return Task.CompletedTask;
+        }
+
+        dbContext.Set<TEntity>().UpdateRange(entities);
+        return dbContext.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task DeleteAsync<TEntity>(int id, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         var entity = await dbContext.Set<TEntity>().SingleAsync(e => e.Id == id, cancellationToken);
         dbContext.Set<TEntity>().Remove(entity);
         await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public Task DeleteAsync<TEntity>(IReadOnlyList<TEntity> entities, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity
+    {
+        if (entities.Count == 0)
+        {
+            return Task.CompletedTask;
+        }
+
+        dbContext.Set<TEntity>().RemoveRange(entities);
+        return dbContext.SaveChangesAsync(cancellationToken);
     }
 }

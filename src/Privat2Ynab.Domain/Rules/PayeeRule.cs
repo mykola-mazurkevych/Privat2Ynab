@@ -43,4 +43,7 @@ public sealed class PayeeRule :
             StringMatchType.Contains => memo.Contains(Memo, StringComparison.OrdinalIgnoreCase),
             _ => throw new NotSupportedException($"String match type {MatchType} is not supported"),
         };
+
+    public void UpdateName(string name) =>
+        Name = name;
 }
