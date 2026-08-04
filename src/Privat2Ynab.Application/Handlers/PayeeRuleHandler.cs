@@ -1,6 +1,6 @@
-using Privat2Ynab.Application.Attributes;
 using Privat2Ynab.Application.Dtos;
 using Privat2Ynab.Application.Extensions;
+using Privat2Ynab.Application.Handlers.Models;
 using Privat2Ynab.Application.Interfaces.Handlers;
 using Privat2Ynab.Application.Interfaces.Persistence;
 using Privat2Ynab.Application.Interfaces.Services;
@@ -77,6 +77,8 @@ internal sealed class PayeeRuleHandler(
 
             await repository.UpdateAsync(payeeRulesToUpdate.AsReadOnly(), cancellationToken);
             await repository.DeleteAsync(payeeRulesToDelete.AsReadOnly(), cancellationToken);
+
+            output.WriteLine(new SyncModel(plan.Id, plan.Name, payeeRulesToUpdate.Count, payeeRulesToDelete.Count).ToTable());
         }
     }
 
@@ -84,26 +86,5 @@ internal sealed class PayeeRuleHandler(
     {
         await repository.DeleteAsync<PayeeRule>(id, cancellationToken);
         output.WriteLine($"Payee rule {id} deleted");
-    }
-
-    private sealed record PayeeRuleModel(
-        int Id,
-        [property: DisplayName("Plan Id")] int PlanId,
-        [property: DisplayName("Plan Name")] string PlanName,
-        string Memo,
-        [property: DisplayName("String Match Type")] StringMatchType MatchType,
-        [property: DisplayName("YNAB Payee Id")] Guid PayeeId,
-        [property: DisplayName("YNAB Payee Name")] string Name,
-        [property: DisplayName("Created At")] DateTime CreatedAt)
-    {
-        public static PayeeRuleModel Create(PayeeRule payeeRule) =>
-            new(payeeRule.Id,
-                payeeRule.Plan.Id,
-                payeeRule.Plan.Name,
-                payeeRule.Memo,
-                payeeRule.MatchType,
-                payeeRule.YnabId,
-                payeeRule.Name,
-                payeeRule.CreatedAt.ToLocalTime().DateTime);
     }
 }

@@ -1,6 +1,6 @@
-using Privat2Ynab.Application.Attributes;
 using Privat2Ynab.Application.Dtos.Ynab;
 using Privat2Ynab.Application.Extensions;
+using Privat2Ynab.Application.Handlers.Models;
 using Privat2Ynab.Application.Interfaces.Handlers;
 using Privat2Ynab.Application.Interfaces.Persistence;
 using Privat2Ynab.Application.Interfaces.Services;
@@ -109,10 +109,4 @@ internal sealed class StatementsHandler(
 
         output.WriteLine(results.ToTable(headless: false));
     }
-
-    private sealed record ResultModel(
-        [property: DisplayName("File Name")] string FileName,
-        [property: DisplayName("Statements Count")] int StatementsCounts,
-        [property: DisplayName("Created Count")] int CreatedCount,
-        [property: DisplayName("Duplicates Count")] int DuplicatesCount);
 }

@@ -1,6 +1,6 @@
-using Privat2Ynab.Application.Attributes;
 using Privat2Ynab.Application.Dtos;
 using Privat2Ynab.Application.Extensions;
+using Privat2Ynab.Application.Handlers.Models;
 using Privat2Ynab.Application.Interfaces.Handlers;
 using Privat2Ynab.Application.Interfaces.Persistence;
 using Privat2Ynab.Application.Interfaces.Services;
@@ -81,6 +81,8 @@ internal sealed class CategoryRuleHandler(
 
             await repository.UpdateAsync(categoryRulesToUpdate.AsReadOnly(), cancellationToken);
             await repository.DeleteAsync(catregoryRulesToDelete.AsReadOnly(), cancellationToken);
+
+            output.WriteLine(new SyncModel(plan.Id, plan.Name, categoryRulesToUpdate.Count, catregoryRulesToDelete.Count).ToTable());
         }
     }
 
@@ -92,25 +94,4 @@ internal sealed class CategoryRuleHandler(
 
     private static string FormatName(string categoryGroupName, string categoryName) =>
         $"{categoryGroupName} => {categoryName}";
-
-    private sealed record CategoryRuleModel(
-        int Id,
-        [property: DisplayName("Plan Id")] int PlanId,
-        [property: DisplayName("Plan Name")] string PlanName,
-        string Memo,
-        [property: DisplayName("String Match Type")] StringMatchType MatchType,
-        [property: DisplayName("YNAB Category Id")] Guid YnabId,
-        [property: DisplayName("YNAB Category Name")] string Name,
-        [property: DisplayName("Created At")] DateTime CreatedAt)
-    {
-        public static CategoryRuleModel Create(CategoryRule categoryRule) =>
-            new(categoryRule.Id,
-                categoryRule.Plan.Id,
-                categoryRule.Plan.Name,
-                categoryRule.Memo,
-                categoryRule.MatchType,
-                categoryRule.YnabId,
-                categoryRule.Name,
-                categoryRule.CreatedAt.ToLocalTime().DateTime);
-    }
 }

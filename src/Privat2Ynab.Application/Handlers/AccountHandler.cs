@@ -1,6 +1,6 @@
-using Privat2Ynab.Application.Attributes;
 using Privat2Ynab.Application.Dtos;
 using Privat2Ynab.Application.Extensions;
+using Privat2Ynab.Application.Handlers.Models;
 using Privat2Ynab.Application.Interfaces.Handlers;
 using Privat2Ynab.Application.Interfaces.Persistence;
 using Privat2Ynab.Application.Interfaces.Services;
@@ -44,24 +44,5 @@ internal sealed class AccountHandler(
     {
         await repository.DeleteAsync<Account>(id, cancellationToken);
         output.WriteLine($"Account {id} deleted");
-    }
-
-    private sealed record AccountModel(
-        int Id,
-        [property: DisplayName("Plan Id")] int PlanId,
-        [property: DisplayName("Plan Name")] string PlanName,
-        [property: DisplayName("YNAB Account Id")] Guid YnabId,
-        [property: DisplayName("YNAB Account Name")] string Name,
-        [property: DisplayName("File Name")] string FileName,
-        [property: DisplayName("Created At")] DateTime CreatedAt)
-    {
-        public static AccountModel Create(Account account) =>
-            new(account.Id,
-                account.Plan.Id,
-                account.Plan.Name,
-                account.YnabId,
-                account.Name,
-                account.FileName,
-                account.CreatedAt.ToLocalTime().DateTime);
     }
 }
