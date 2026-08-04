@@ -114,7 +114,7 @@ internal sealed class YnabClient :
 
     private sealed record SaveTransactionsRequest([property: JsonPropertyName("transactions")] IEnumerable<YnabTransaction> Transactions);
     private sealed record SaveTransactionsResponse(
-        [property: JsonPropertyName("transaction_ids")] IEnumerable<Guid> TransactionIds,
+        [property: JsonPropertyName("transaction_ids")] IEnumerable<string> TransactionIds,
         [property: JsonPropertyName("duplicate_import_ids")] IEnumerable<string> DuplicateImportIds)
     {
         public (int CreatedCount, int DuplicatesCount) ToCounts() =>

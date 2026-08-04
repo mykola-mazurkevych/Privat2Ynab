@@ -73,20 +73,22 @@ internal sealed class StatementsHandler(
                 var categoryRule = applicableCategoryRules.OrderBy(c => c.CreatedAt).FirstOrDefault();
                 if (applicableCategoryRules.Count > 1)
                 {
-                    output.WriteLine("More than one category rule is applicable:");
-                    output.WriteLine($"  - memo: {statement.Description}");
-                    output.WriteLine($"  - applicable rule ids: {string.Join(", ", applicableCategoryRules.Select(p => p.Id))}");
-                    output.WriteLine($"  - rule id applied: {categoryRule!.Id}");
+                    output.WriteLines(
+                        "More than one category rule is applicable:",
+                        $"  - memo: {statement.Description}",
+                        $"  - applicable rule ids: {string.Join(", ", applicableCategoryRules.Select(p => p.Id))}",
+                        $"  - rule id applied: {categoryRule!.Id}");
                 }
 
                 var applicablePayeeRules = payeeRules.Where(p => p.IsApplicableTo(statement.Description)).ToList();
                 var payeeRule = applicablePayeeRules.OrderBy(p => p.CreatedAt).FirstOrDefault();
                 if (applicablePayeeRules.Count > 1)
                 {
-                    output.WriteLine("More than one payee rule is applicable:");
-                    output.WriteLine($"  - memo: {statement.Description}");
-                    output.WriteLine($"  - applicable rule ids: {string.Join(", ", applicablePayeeRules.Select(p => p.Id))}");
-                    output.WriteLine($"  - rule id applied: {payeeRule!.Id}");
+                    output.WriteLines(
+                        "More than one payee rule is applicable:",
+                        $"  - memo: {statement.Description}",
+                        $"  - applicable rule ids: {string.Join(", ", applicablePayeeRules.Select(p => p.Id))}",
+                        $"  - rule id applied: {payeeRule!.Id}");
                 }
 
                 var transaction = new YnabTransaction(
