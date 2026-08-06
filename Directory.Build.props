@@ -3,6 +3,7 @@
   <PropertyGroup>
     <Authors>Mykola Mazurkevych</Authors>
     <RepositoryUrl>https://github.com/mykola-mazurkevych/Privat2Ynab</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup>

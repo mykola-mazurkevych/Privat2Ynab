@@ -2,6 +2,10 @@
 
 Privat2Ynab is a personal CLI utility that imports statement exports from PrivatBank (Privat24) into YNAB.
 
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
+
 PrivatBank/Privat24 is a Ukrainian banking service that allows exporting account statements.
 YNAB (You Need A Budget) is a budgeting app with an API for importing transactions.
 
