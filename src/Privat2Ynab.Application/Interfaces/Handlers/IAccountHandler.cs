@@ -6,5 +6,6 @@ public interface IAccountHandler
 {
     Task ListAsync(CancellationToken cancellationToken = default);
     Task AddAsync(CreateAccountDto createAccount, CancellationToken cancellationToken = default);
+    Task SynchronizeAsync(FilterDto filter, CancellationToken cancellationToken = default);
     Task DeleteAsync(int id, CancellationToken cancellationToken = default);
 }

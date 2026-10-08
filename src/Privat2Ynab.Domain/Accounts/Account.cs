@@ -30,4 +30,7 @@ public sealed class Account :
         string name,
         string fileName) =>
         new(createdAt, planId, ynabId, name, fileName);
+
+    public void UpdateName(string name) =>
+        Name = name;
 }

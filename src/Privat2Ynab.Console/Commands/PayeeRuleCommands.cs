@@ -21,7 +21,7 @@ internal static class PayeeRuleCommands
                 {
                     CreateListPayeeRulesCommand(payeeRuleHandler),
                     CreateAddPayeeRuleCommand(payeeRuleHandler),
-                    CreateSynchronizeRulesCommand(payeeRuleHandler),
+                    CreateSynchronizePayeeRulesCommand(payeeRuleHandler),
                     ////CreateUpdatePayeeRuleCommand(), // TODO: Decide if needed
                     CreateDeletePayeeRuleCommand(payeeRuleHandler),
                 });
@@ -81,25 +81,24 @@ internal static class PayeeRuleCommands
         return addPayeeRuleCommand;
     }
 
-    private static Command CreateSynchronizeRulesCommand(IPayeeRuleHandler payeeRuleHandler)
+    private static Command CreateSynchronizePayeeRulesCommand(IPayeeRuleHandler payeeRuleHandler)
     {
         var planIdOption = new Option<int?>("--plan-id")
         {
             Description = "Plan Id"
         };
 
-        var addPayeeRuleCommand = new Command("sync", "Synchronize payee names with YNAB")
+        var synchronizePayeeRuleCommand = new Command("sync", "Synchronize payee names with YNAB")
         {
             planIdOption
         };
 
-        addPayeeRuleCommand.SetAction((parseResult, cancellationToken) =>
+        synchronizePayeeRuleCommand.SetAction((parseResult, cancellationToken) =>
             payeeRuleHandler.SynchronizeAsync(
-                new FilterDto(
-                    parseResult.GetValue(planIdOption)),
+                new FilterDto(parseResult.GetValue(planIdOption)),
                 cancellationToken));
 
-        return addPayeeRuleCommand;
+        return synchronizePayeeRuleCommand;
     }
 
     private static Command CreateDeletePayeeRuleCommand(IPayeeRuleHandler payeeRuleHandler)

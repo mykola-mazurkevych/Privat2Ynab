@@ -20,6 +20,7 @@ internal static class AccountCommands
                 {
                     CreateListAccountsCommand(accountHandler),
                     CreateAddAccountCommand(accountHandler),
+                    CreateSynchronizeAccountsCommand(accountHandler),
                     ////CreateUpdateAccountCommand(), // TODO: Decide if needed
                     CreateDeleteAccountCommand(accountHandler),
                 });
@@ -91,5 +92,25 @@ internal static class AccountCommands
                 cancellationToken));
 
         return deleteAccountCommand;
+    }
+
+    private static Command CreateSynchronizeAccountsCommand(IAccountHandler accountHandler)
+    {
+        var planIdOption = new Option<int?>("--plan-id")
+        {
+            Description = "Plan Id",
+        };
+
+        var synchronizeAccountsCommand = new Command("sync", "Synchronize account names with YNAB")
+        {
+            planIdOption,
+        };
+
+        synchronizeAccountsCommand.SetAction((parseResult, cancellationToken) =>
+            accountHandler.SynchronizeAsync(
+                new FilterDto(parseResult.GetValue(planIdOption)),
+                cancellationToken));
+
+        return synchronizeAccountsCommand;
     }
 }

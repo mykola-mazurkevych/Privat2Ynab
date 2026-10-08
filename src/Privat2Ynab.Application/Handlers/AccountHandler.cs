@@ -23,11 +23,13 @@ internal sealed class AccountHandler(
 
     public async Task AddAsync(CreateAccountDto createAccount, CancellationToken cancellationToken = default)
     {
-        var plan = await repository.GetAsync<Plan>(createAccount.PlanId, cancellationToken)
-                   ?? throw new InvalidOperationException("Plan not found");
+        var plan =
+            await repository.GetAsync<Plan>(createAccount.PlanId, cancellationToken)
+            ?? throw new InvalidOperationException("Plan not found");
 
-        var ynabAccount = await ynabClient.GetAccountAsync(plan.YnabId, createAccount.YnabId, plan.Token, cancellationToken)
-                          ?? throw new InvalidOperationException("Account not found");
+        var ynabAccount =
+            await ynabClient.GetAccountAsync(plan.YnabId, createAccount.YnabId, plan.Token, cancellationToken)
+            ?? throw new InvalidOperationException("Account not found");
 
         var account = Account.Create(
             DateTimeOffset.UtcNow,
@@ -38,6 +40,47 @@ internal sealed class AccountHandler(
         account = await repository.AddAsync(account, cancellationToken);
         output.WriteLine("Account added:");
         output.WriteLine(AccountModel.Create(account).ToTable());
+    }
+
+    public async Task SynchronizeAsync(FilterDto filter, CancellationToken cancellationToken = default)
+    {
+        var plans = filter.PlanId.HasValue
+            ? [await repository.GetAsync<Plan>(filter.PlanId.Value, cancellationToken) ?? throw new InvalidOperationException("Plan not found")]
+            : await repository.GetAllAsync<Plan>(cancellationToken);
+
+        foreach (var plan in plans)
+        {
+            var accounts = await repository.GetAllAsync<Account>(a => a.PlanId == plan.Id, cancellationToken);
+            if (accounts.Count == 0)
+            {
+                continue;
+            }
+
+            var ynabAccounts = await ynabClient.GetAccountsAsync(plan.YnabId, plan.Token, cancellationToken);
+            var ynabAccountIdToNameMap = ynabAccounts
+                .ToDictionary(a => a.Id, a => a.Name);
+            
+            var accountsToUpdate = new List<Account>(accounts.Count);
+            var accountsToDelete = new List<Account>(accounts.Count);
+
+            foreach (var account in accounts)
+            {
+                if (!ynabAccountIdToNameMap.TryGetValue(account.YnabId, out var name))
+                {
+                    accountsToDelete.Add(account);
+                }
+                else if (!string.Equals(account.Name, name, StringComparison.Ordinal))
+                {
+                    account.UpdateName(name);
+                    accountsToUpdate.Add(account);
+                }
+            }
+
+            await repository.UpdateAsync(accountsToUpdate.AsReadOnly(), cancellationToken);
+            await repository.DeleteAsync(accountsToDelete.AsReadOnly(), cancellationToken);
+
+            output.WriteLine(new SyncModel(plan.Id, plan.Name, accountsToUpdate.Count, accountsToDelete.Count).ToTable());
+        }
     }
 
     public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)

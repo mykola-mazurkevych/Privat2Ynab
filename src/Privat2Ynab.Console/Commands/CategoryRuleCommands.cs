@@ -21,7 +21,7 @@ internal static class CategoryRuleCommands
                 {
                     CreateListCategoryRulesCommand(categoryRuleHandler),
                     CreateAddCategoryRuleCommand(categoryRuleHandler),
-                    CreateSynchronizeRulesCommand(categoryRuleHandler),
+                    CreateSynchronizeCategoryRulesCommand(categoryRuleHandler),
                     ////CreateUpdateCategoryRuleCommand(), // TODO: Decide if needed
                     CreateDeleteCategoryRuleCommand(categoryRuleHandler),
                 });
@@ -88,25 +88,24 @@ internal static class CategoryRuleCommands
         return addCategoryRuleCommand;
     }
 
-    private static Command CreateSynchronizeRulesCommand(ICategoryRuleHandler categoryRuleHandler)
+    private static Command CreateSynchronizeCategoryRulesCommand(ICategoryRuleHandler categoryRuleHandler)
     {
         var planIdOption = new Option<int?>("--plan-id")
         {
             Description = "Plan Id"
         };
 
-        var addPayeeRuleCommand = new Command("sync", "Synchronize payee names with YNAB")
+        var synchronizeCategoryRulesCommand = new Command("sync", "Synchronize category names with YNAB")
         {
             planIdOption
         };
 
-        addPayeeRuleCommand.SetAction((parseResult, cancellationToken) =>
+        synchronizeCategoryRulesCommand.SetAction((parseResult, cancellationToken) =>
             categoryRuleHandler.SynchronizeAsync(
-                new FilterDto(
-                    parseResult.GetValue(planIdOption)),
+                new FilterDto(parseResult.GetValue(planIdOption)),
                 cancellationToken));
 
-        return addPayeeRuleCommand;
+        return synchronizeCategoryRulesCommand;
     }
 
     private static Command CreateDeleteCategoryRuleCommand(ICategoryRuleHandler categoryRuleHandler)

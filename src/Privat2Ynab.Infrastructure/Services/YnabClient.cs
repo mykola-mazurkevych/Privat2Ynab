@@ -34,6 +34,14 @@ internal sealed class YnabClient :
             _ => null,
             cancellationToken);
 
+    public Task<IReadOnlyCollection<YnabAccount>> GetAccountsAsync(Guid planId, string token, CancellationToken cancellationToken = default) =>
+        GetAsync<AccountsResponse, IReadOnlyCollection<YnabAccount>>(
+            ["plans", planId, "accounts"],
+            token,
+            dataResponse => dataResponse.Data.Accounts.AsReadOnly(),
+            _ => [],
+            cancellationToken);
+
     public Task<IReadOnlyCollection<YnabPayee>> GetPayeesAsync(Guid planId, string token, CancellationToken cancellationToken = default) =>
         GetAsync<PayeesResponse, IReadOnlyCollection<YnabPayee>>(
             ["plans", planId, "payees"],
@@ -108,6 +116,7 @@ internal sealed class YnabClient :
     private sealed record DataResponse<TData>([property: JsonPropertyName("data")] TData Data);
 
     private sealed record AccountResponse([property: JsonPropertyName("account")] YnabAccount Account);
+    private sealed record AccountsResponse([property: JsonPropertyName("accounts")] Collection<YnabAccount> Accounts);
     private sealed record CategoyGroupsResponse([property: JsonPropertyName("category_groups")] Collection<YnabCategoryGroup> CategoryGroups);
     private sealed record PayeesResponse([property: JsonPropertyName("payees")] Collection<YnabPayee> Payees);
     private sealed record PlanResponse([property: JsonPropertyName("plan")] YnabPlan Plan);
