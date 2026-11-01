@@ -59,7 +59,7 @@ internal static class EnumerableExtensions
 
         for (var i = 0; i < widths.Count; i++)
         {
-            builder.Append(new string('─', widths[i] + 2));
+            builder.Append('─', widths[i] + 2);
             builder.Append(i == widths.Count - 1 ? right : middle);
         }
 
